@@ -1,4 +1,4 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 let content = fs.readFileSync('H:/Mi unidad/2kOFFICE/app.js', 'utf8');
 
 content = content.replace(/livePlayers\.forEach\(p => \{\r?\n        let tr = document\.createElement\('tr'\);/g, 

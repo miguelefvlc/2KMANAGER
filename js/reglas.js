@@ -3,6 +3,18 @@
  * Funciones puras para los cálculos de la Agencia Libre.
  */
 
+window.fetchCSV = async function(url) {
+    const res = await fetch(url, { cache: 'no-store' });
+    const buffer = await res.arrayBuffer();
+    try {
+        const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
+        return utf8Decoder.decode(buffer);
+    } catch (e) {
+        const ansiDecoder = new TextDecoder('windows-1252');
+        return ansiDecoder.decode(buffer);
+    }
+};
+
 function parseCurrency(str) {
     if(!str) return 0;
     let s = str.toString();
@@ -54,7 +66,7 @@ function calculateRoundModifier(salary, round) {
 function getPlayerPhotoPath(playerName) {
     let slug = playerName.toLowerCase();
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    slug = slug.replace(/['’.]/g, "");
+    slug = slug.replace(/['\.]/g, "");
     slug = slug.replace(/[^a-z0-9]+/g, "-");
     slug = slug.replace(/^-+|-+$/g, '');
     return `photos/${slug}.png`;

@@ -1,9 +1,41 @@
+/* ================================================================
+   style.css — Estilos globales del proyecto 2K OFFICE
+   ================================================================
+   SECCIONES:
+   1.  Variables y Reset
+   2.  Header & Top Bar
+   3.  Widgets de Economía
+   4.  Barra de Logos de Equipos
+   5.  Badges & Indicadores de Ronda
+   6.  Layout Grid
+   7.  Panels
+   8.  Formularios
+   9.  Tablas de Datos
+   10. Interactividad (hover, selected)
+   11. Utilidades
+   12. Loader / Spinner
+   13. Variantes de Panel
+   14. Modal — Logo Grid de Equipos
+   15. Trade Machine
+   16. Tooltip de Jugador
+   17. Botón Home
+   18. Animaciones
+   19. Segmented Control (selector de años)
+   20. Página Jugadores
+   21. Overlay — Rotar Dispositivo (Mobile Portrait)
+   22. Responsive
+   23. Fixes Globales
+   ================================================================ */
+
+/* ================================================================
+   1. VARIABLES Y RESET
+   ================================================================ */
 :root {
     /* Paleta Dark Analytics UI Premium */
-    --bg-base: #0a0a0a;
-    --bg-panel: rgba(23, 23, 23, 0.65); /* Glassmorphism base */
-    --bg-hover: rgba(38, 38, 38, 0.8);
-    --border-subtle: rgba(255, 255, 255, 0.08);
+    --bg-base: #121212;
+    --bg-panel: rgba(36, 36, 36, 0.65); /* Glassmorphism base */
+    --bg-hover: rgba(51, 51, 51, 0.8);
+    --border-subtle: rgba(255, 255, 255, 0.1);
     --border-focus: #3b82f6;
     
     --text-main: #f8fafc;
@@ -16,11 +48,17 @@
     --accent-purple: #8b5cf6;
     --accent-yellow: #eab308;
     
+    /* Trade Colors */
+    --trade-green: #22c55e;
+    --trade-orange: #f97316;
+    --trade-red: #ef4444;
+    
     --font-ui: 'Inter', sans-serif;
     --font-data: 'Outfit', 'JetBrains Mono', monospace;
     
     --shadow-soft: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
+
 
 * { box-sizing: border-box; }
 
@@ -34,12 +72,17 @@ body {
     min-height: 100vh;
 }
 
-/* --- HEADER & TOP ECONOMY --- */
+/* ================================================================
+   2. HEADER & TOP BAR
+   ================================================================ */
 .top-bar { width: 100%; max-width: 1400px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; margin-bottom: 30px; }
 
 .brand h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #fff; text-transform: uppercase; }
 .brand p { margin: 5px 0 0 0; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
 
+/* ================================================================
+   3. WIDGETS DE ECONOMÍA
+   ================================================================ */
 .economy-widgets { display: flex; gap: 12px; align-items: stretch; justify-content: center; }
 .widget { 
     background: var(--bg-panel); border: 1px solid var(--border-subtle); padding: 12px 18px; 
@@ -54,7 +97,9 @@ body {
 .widget strong { display: block; font-family: var(--font-data); font-size: 24px; color: var(--text-main); font-weight: 600; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
 .widget.highlight { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.08); }
 
-/* --- BARRA DE LOGOS DINÁMICA --- */
+/* ================================================================
+   4. BARRA DE LOGOS DE EQUIPOS
+   ================================================================ */
 .teams-bar {
     width: 100%;
     max-width: 1400px;
@@ -93,7 +138,9 @@ body {
     filter: grayscale(100%);
 }
 
-/* --- BADGES PARA RONDAS --- */
+/* ================================================================
+   5. BADGES & INDICADORES DE RONDA
+   ================================================================ */
 .round-badge {
     display: inline-block;
     padding: 2px 6px;
@@ -108,11 +155,17 @@ body {
 .round-3 { background-color: rgba(59, 130, 246, 0.2); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
 .round-4 { background-color: rgba(139, 92, 246, 0.2); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
 .round-5 { background-color: rgba(239, 68, 68, 0.2); color: var(--accent-red); border: 1px solid var(--accent-red); }
+.round-6 { background-color: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; } /* Green */
+.round-7 { background-color: rgba(236, 72, 153, 0.2); color: #ec4899; border: 1px solid #ec4899; } /* Pink */
 
-/* --- LAYOUT GRID --- */
+/* ================================================================
+   6. LAYOUT GRID
+   ================================================================ */
 .main-layout { display: grid; grid-template-columns: 2.2fr 1fr; gap: 25px; width: 100%; max-width: 1400px; }
 
-/* --- PANELS & UI COMPONENTS --- */
+/* ================================================================
+   7. PANELS
+   ================================================================ */
 .panel { 
     background: var(--bg-panel); border: 1px solid var(--border-subtle); 
     border-radius: 16px; padding: 25px; display: flex; flex-direction: column;
@@ -122,14 +175,18 @@ body {
 .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
 .panel-title { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-main); margin: 0; }
 
-/* Formularios */
+/* ================================================================
+   8. FORMULARIOS
+   ================================================================ */
 input, select { 
     width: 100%; background: var(--bg-base); border: 1px solid var(--border-subtle); color: var(--text-main); 
     padding: 10px 12px; border-radius: 6px; font-family: var(--font-ui); font-size: 13px; transition: border 0.2s; 
 }
 input:focus, select:focus { outline: none; border-color: var(--border-focus); }
 
-/* --- TABLAS DE DATOS --- */
+/* ================================================================
+   9. TABLAS DE DATOS
+   ================================================================ */
 .table-wrap { overflow-y: auto; max-height: 600px; border: 1px solid var(--border-subtle); border-radius: 12px; background: rgba(0,0,0,0.2); }
 .table-wrap::-webkit-scrollbar { width: 6px; }
 .table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
@@ -144,11 +201,16 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
 .data-num { font-family: var(--font-data); }
 .text-muted { color: var(--text-muted); }
 
+/* ================================================================
+   10. INTERACTIVIDAD
+   ================================================================ */
 /* Interacciones Tabla Estudio */
 .row-interactive:hover { background: rgba(255,255,255,0.05); cursor: pointer; transform: scale(1.002); }
 .row-interactive.selected { background: rgba(59, 130, 246, 0.15); border-left: 3px solid var(--accent-blue); box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.1); }
 
-/* --- UTILIDADES --- */
+/* ================================================================
+   11. UTILIDADES
+   ================================================================ */
 .flex-between { display: flex; justify-content: space-between; align-items: center; }
 .color-green { color: var(--accent-green); }
 .color-red { color: var(--accent-red); }
@@ -160,7 +222,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
 .rival-card { background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 12px; margin-bottom: 2px; transition: 0.2s; }
 .rival-card:hover { filter: brightness(1.1); }
 
-/* LOADING */
+/* ================================================================
+   12. LOADER / SPINNER
+   ================================================================ */
 #loader {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -181,7 +245,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- REFACTORING UTILITIES --- */
+/* ================================================================
+   13. VARIANTES DE PANEL
+   ================================================================ */
 .panel-header-clean { padding: 20px 20px 0 20px; border: none; }
 .table-wrap-clean { border: none; border-top: 1px solid var(--border-subtle); border-radius: 0; max-height: 650px; }
 .target-name-clean { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: var(--accent-blue); }
@@ -210,6 +276,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     box-shadow: 0 0 15px rgba(255,255,255,0.1);
 }
 
+/* ================================================================
+   14. MODAL — LOGO GRID DE EQUIPOS
+   ================================================================ */
 .logo-grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
@@ -241,7 +310,10 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     border-color: var(--accent-blue);
 }
 
-/* --- INJECTED FROM HTML --- */
+/* ================================================================
+   15. TRADE MACHINE
+   (trade.html)
+   ================================================================ */
 
         .trade-board {
             display: flex;
@@ -381,6 +453,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
             text-align: left;
         }
         
+/* ================================================================
+   16. TOOLTIP DE JUGADOR
+   ================================================================ */
         /* Tooltip Styles */
         .player-tooltip {
             position: absolute;
@@ -421,7 +496,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
         .bg-bird { background-color: rgba(16, 185, 129, 0.6); color: var(--text-main); font-weight: bold; }
         .bg-r { background-color: var(--accent-orange); color: #fff; font-weight: bold; }
 
-/* --- BOTON HOME DISCRETO --- */
+/* ================================================================
+   17. BOTÓN HOME
+   ================================================================ */
 .home-btn {
     position: fixed;
     top: 20px;
@@ -452,7 +529,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     height: 16px;
 }
 
-/* --- ANIMACIONES BÚSQUEDA --- */
+/* ================================================================
+   18. ANIMACIONES
+   ================================================================ */
 @keyframes rowGlow {
     0% { background-color: rgba(59, 130, 246, 0.5); }
     100% { background-color: transparent; }
@@ -461,7 +540,9 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     animation: rowGlow 2.5s ease-out;
 }
 
-/* --- SELECTOR DE AÑOS (SEGMENTED) --- */
+/* ================================================================
+   19. SEGMENTED CONTROL (selector de años)
+   ================================================================ */
 .yr-seg-group {
     display: inline-flex;
     background: var(--bg-base);
@@ -581,11 +662,16 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     .add-team-btn {
         min-height: 120px;
     }
+    .player-tooltip {
+        display: none !important;
+    }
 }
 
 .sim-scroll-container::-webkit-scrollbar { width: 6px; }
 .sim-scroll-container::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 3px; }
-/* Jugadores Page Styles */
+/* ================================================================
+   20. PÁGINA JUGADORES
+   ================================================================ */
 .players-layout {
     display: flex;
     gap: 20px;
@@ -694,6 +780,31 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     }
 }
 
+/* ================================================================
+   21. ROTACIÓN FORZADA (Mobile Portrait)
+   ================================================================ */
+
+@media screen and (orientation: portrait) and (max-width: 900px) {
+    html {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+    body {
+        transform: rotate(-90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        overflow: auto;
+        position: absolute;
+        top: 100vh;
+        left: 0;
+    }
+}
+
+/* ================================================================
+   22. RESPONSIVE
+   ================================================================ */
 /* Dropdown fix */
 select option {
     background-color: #1e293b !important;

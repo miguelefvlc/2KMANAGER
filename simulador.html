@@ -6,15 +6,15 @@
     <title>SIMULADOR GLOBAL | Pro-GM Software</title>
     <!-- Fuentes: Inter para UI limpia, JetBrains Mono para datos numéricos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Incluimos PapaParse para leer los CSV directamente desde Google Sheets -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- PapaParse para leer CSV locales -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js?v=8"     ></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <a href="fa.html" class="home-btn" title="Volver a FA Office">
+    <a href="index.html" class="home-btn" title="Volver al inicio">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
         </svg>
     </a>
 
@@ -65,36 +65,66 @@
 
 
     <!-- CONTENIDO PRINCIPAL -->
-    <div id="main-content" style="display:block; max-width: 100%; padding: 0 20px;">
-        
-        <div class="panel" style="padding:0; overflow:hidden;">
-            <div class="panel-header panel-header-clean" style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 class="panel-title">Agentes Libres</h2>
-                <div class="search-container" style="display: flex; align-items: center; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 4px 8px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="var(--text-muted)" viewBox="0 0 16 16" style="margin-right: 6px;">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                    </svg>
-                    <input type="text" id="player-search-input" placeholder="Buscar jugador... (Enter)" style="background: transparent; border: none; color: var(--text-main); font-family: var(--font-ui); outline: none; font-size: 13px; width: 200px; padding: 2px;">
+    <div id="main-content" style="display:block; width: 100%; max-width: 1400px; padding: 0;">
+        <div style="display: flex; gap: 20px; align-items: flex-start;">
+            <div class="panel" style="padding:0; overflow:hidden; flex: 3; width: 75%;">
+                <div class="panel-header panel-header-clean" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="panel-title">Agentes Libres</h2>
+                    <div class="search-container" style="display: flex; align-items: center; background: var(--bg-base); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 4px 8px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="var(--text-muted)" viewBox="0 0 16 16" style="margin-right: 6px;">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                        </svg>
+                        <input type="text" id="player-search-input" placeholder="Buscar jugador... (Enter)" style="background: transparent; border: none; color: var(--text-main); font-family: var(--font-ui); outline: none; font-size: 13px; width: 200px; padding: 2px;">
+                    </div>
+                </div>
+                <div class="table-wrap table-wrap-clean">
+                    <table id="study-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20px;"></th>
+                                <th>Jugador</th>
+                                <th style="width: 60px; text-align: center;">Equipo</th>
+                                <th>Pos</th>
+                                <th>Media</th>
+                                <th title="Edad del Jugador">Edad</th>
+                                <th title="Derechos Bird">Bird</th>
+                                <th>R</th>
+                                <th>Aspirantes</th>
+                                <th>Ronda</th>
+                            </tr>
+                        </thead>
+                        <tbody id="study-tbody"></tbody>
+                    </table>
                 </div>
             </div>
-            <div class="table-wrap table-wrap-clean">
-                <table id="study-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 20px;"></th>
-                            <th>Jugador</th>
-                            <th>Equipo</th>
-                            <th>Pos</th>
-                            <th>Media</th>
-                            <th title="Edad del Jugador">Edad</th>
-                            <th title="Derechos Bird">Bird</th>
-                            <th>R</th>
-                            <th>Aspirantes</th>
-                            <th>Ronda</th>
-                        </tr>
-                    </thead>
-                    <tbody id="study-tbody"></tbody>
-                </table>
+            
+            <!-- HOJA DE RUTA PANEL -->
+            <div class="panel" style="flex: 1; width: 25%; background: var(--bg-panel); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; flex-direction: column; max-height: 800px; padding: 0;">
+                <div class="panel-header" style="border-bottom: 1px solid var(--border-subtle); padding: 15px;">
+                    <h2 class="panel-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+                        HOJA DE RUTA
+                    </h2>
+                </div>
+                <div style="padding: 10px 15px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-base);">
+                    <div id="sim-economy-summary" style="display: flex; justify-content: space-between; font-size: 11px; padding: 8px 12px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; color: var(--text-muted); text-align: center;">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-size: 9px; text-transform: uppercase;">LS</span>
+                            <span id="sim-sum-ls" style="font-family: var(--font-mono); font-weight: bold; font-size: 12px; color: var(--text-main);"></span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-size: 9px; text-transform: uppercase;">PRES</span>
+                            <span id="sim-sum-pres" style="font-family: var(--font-mono); font-weight: bold; font-size: 12px; color: var(--text-main);"></span>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-size: 9px; text-transform: uppercase;">MLE</span>
+                            <span id="sim-sum-mle" style="font-family: var(--font-mono); font-weight: bold; font-size: 12px; color: var(--text-main);"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="hoja-ruta-list" style="padding: 15px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Los tags se insertarán aquí por JS -->
+                    <span class="text-muted text-small">Aún no hay firmas en la hoja de ruta.</span>
+                </div>
             </div>
         </div>
     </div>
@@ -163,10 +193,13 @@
                 <div>MLE: <span id="global-sim-sum-mle" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
             </div>
 
-            <div id="global-sim-player-info" style="display: flex; justify-content: space-between; font-size: 11px; padding: 6px 12px; background: rgba(59, 130, 246, 0.05); border: 1px dashed var(--accent-blue); border-radius: 6px; color: var(--text-muted); margin-top: -10px;">
-                <div>MIN: <span id="global-sim-info-min" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
-                <div>MAX: <span id="global-sim-info-max" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
-                <div>CAP HOLD: <span id="global-sim-info-ch" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
+            <div id="global-sim-player-info" style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; padding: 6px 12px; background: rgba(59, 130, 246, 0.05); border: 1px dashed var(--accent-blue); border-radius: 6px; color: var(--text-muted); margin-top: -10px;">
+                <div style="display: flex; gap: 15px;">
+                    <div>MIN: <span id="global-sim-info-min" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
+                    <div>MAX: <span id="global-sim-info-max" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
+                    <div>CAP HOLD: <span id="global-sim-info-ch" style="font-family: var(--font-mono); color: var(--text-main); font-weight: bold;"></span></div>
+                </div>
+                <button id="global-sim-round-btn" onclick="openRoundSelector(window.globalSimPlayer.id)" class="round-badge" style="cursor: pointer; font-size: 11px; padding: 2px 6px; border-radius: 4px;" title="Cambiar Ronda">R?</button>
             </div>
 
             <div id="global-sign-ch-container">
@@ -211,10 +244,12 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/reglas.js"></script>
-    <script src="js/simulador_ui.js"></script>
-    <script src="js/simulador.js"></script>
+    <!-- Scripts (orden de carga: constants → reglas → simulador_ui → simulador) -->
+    <script src="js/shared/constants.js?v=8"     ></script>
+    <script src="js/reglas.js?v=8"     ></script>
+    <script src="js/simulador_ui.js?v=8"     ></script>
+    <script src="js/simulador.js?v=8"     ></script>
 </body>
 </html>
+
 

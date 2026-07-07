@@ -20,7 +20,7 @@ const teamLogos = {
     "Portland Trail Blazers": "logos/imgi_280_por.png",
     "Utah Jazz": "logos/imgi_281_utah.png",
     "Golden State Warriors": "logos/imgi_282_gs.png",
-    "LA Clippers": "logos/imgi_283_lac.png",
+    "Los Angeles Clippers": "logos/imgi_283_lac.png",
     "Los Angeles Lakers": "logos/imgi_284_lal.png",
     "Phoenix Suns": "logos/imgi_285_phx.png",
     "Sacramento Kings": "logos/imgi_286_sac.png",
@@ -43,8 +43,8 @@ function calculateAge(birthday) {
 function getPlayerPhotoPath(playerName) {
     if (!playerName) return '';
     let slug = playerName.toLowerCase();
-    slug = slug.normalize("NFD").replace(/[̀-ͯ]/g, "");
-    slug = slug.replace(/['’.]/g, "");
+    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    slug = slug.replace(/['\.]/g, "");
     slug = slug.replace(/[^a-z0-9]+/g, "-");
     slug = slug.replace(/^-+|-+$/g, "");
     return `photos/${slug}.png`;
@@ -82,7 +82,7 @@ function parseCurrencyStr(val) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Obtener parámetro de URL
+    // 1. Obtener parÃƒÂ¡metro de URL
     const urlParams = new URLSearchParams(window.location.search);
     const teamNameParam = urlParams.get('team');
 
@@ -94,6 +94,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const targetTeamName = teamNameParam;
+
+    // Configurar botÃƒÂ³n Visual Roster
+    const vrBtn = document.getElementById('visual-roster-btn');
+    if (vrBtn) {
+        vrBtn.href = `visual_roster.html?team=${encodeURIComponent(targetTeamName)}`;
+    }
 
     // Populate Nav Bar
     const navBar = document.getElementById('roster-nav-bar');
@@ -124,22 +130,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-        // 3. Fetch CSVs
-        const [playersRes, ecoRes, draftRes] = await Promise.all([
-            fetch('players.csv'),
-            fetch('economia.csv'),
-            fetch('draft_picks.csv')
+        // 3. Fetch CSVs via CSVService
+        const [parsedPlayers, parsedEco] = await Promise.all([
+            CSVService.getPlayers(),
+            CSVService.getEconomy()
         ]);
-        if (!playersRes.ok || !ecoRes.ok || !draftRes.ok) throw new Error('No se pudo descargar los CSVs.');
-
-        const playersText = await playersRes.text();
-        const ecoText = await ecoRes.text();
-        const draftText = await draftRes.text();
-        const delimiterEco = ecoText.split('\n')[0].includes(';') ? ';' : ',';
-        const delimiterPlayers = playersText.split('\n')[0].includes(';') ? ';' : ',';
-        
-        const parsedEco = Papa.parse(ecoText, { header: true, skipEmptyLines: true, delimiter: delimiterEco }).data;
-        const parsedPlayers = Papa.parse(playersText, { header: true, skipEmptyLines: true, delimiter: delimiterPlayers }).data;
 
         // 4. Buscar Equipo en economia.csv para obtener su ID y sus datos financieros
         let teamId = null;
@@ -155,18 +150,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (!teamId) {
-            console.error("No se encontró el equipo en economia.csv");
+            console.error("No se encontrÃƒÂ³ el equipo en economia.csv");
             document.getElementById('loader').style.display = 'none';
             document.getElementById('roster-content').style.display = 'block';
             return;
         }
 
-        // 5. Rellenar Tabla Economía
+        // 5. Rellenar Tabla EconomÃƒÂ­a
         const ecoBody = document.getElementById('economy-body');
         ecoBody.innerHTML = ''; // Clear
         
         if (teamEconomyData) {
-            // Extraer las claves principales de economía
+            // Extraer las claves principales de economÃƒÂ­a
             const keys = [
                 "Disponible limite salarial",
                 "Disponible presupuesto",
@@ -252,7 +247,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         // 7. Rellenar Tabla Rondas Draft
-        const parsedDraft = Papa.parse(draftText, { header: true, skipEmptyLines: true }).data;
+        const parsedDraft = await CSVService.getDraftPicks();
         const draftBody = document.getElementById('draft-body');
         if (draftBody) {
             draftBody.innerHTML = '';
@@ -263,7 +258,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 draftBody.innerHTML = `<tr><td colspan="3" class="text-center" style="color: var(--text-muted); font-style: italic;">No hay rondas registradas.</td></tr>`;
             } else {
                 const sample = parsedDraft[0] || {};
-                const yearKey = Object.keys(sample).find(k => k.includes('A') && k.includes('o')) || 'Año';
+                const yearKey = Object.keys(sample).find(k => k.includes('A') && k.includes('o')) || 'AÃƒÂ±o';
                 
                 teamDraftPicks.sort((a, b) => {
                     const ya = parseInt(a[yearKey] || 0);
@@ -305,3 +300,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('loader').innerHTML = `<p style="color:var(--accent-red)">Error al cargar datos. Comprueba la consola.<br><strong>Error:</strong> ${e.message}<br><strong>Stack:</strong> ${e.stack}</p>`;
     }
 });
+
+

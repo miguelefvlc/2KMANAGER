@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1400">
     <title>FREE AGENT OFFICE | Pro-GM Software</title>
-    <!-- Fuentes: Inter para UI limpia, JetBrains Mono para datos numéricos -->
+    <!-- Fuentes: Inter para UI limpia, JetBrains Mono para datos numÃ©ricos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Incluimos PapaParse para leer los CSV directamente desde Google Sheets -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- PapaParse para leer CSV locales -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js?v=8"     ></script>
     <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.addEventListener('error', function(e) {
+            const loader = document.getElementById('loader');
+            if(loader) loader.innerHTML = <p style='color:red; font-size:18px;'>Error de SINTAXIS o JS:<br> + e.message + <br>Archivo:  + e.filename +  Linea:  + e.lineno + </p>;
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            const loader = document.getElementById('loader');
+            if(loader) loader.innerHTML = <p style='color:red; font-size:18px;'>Error de PROMESA:<br> + (e.reason && e.reason.message ? e.reason.message : e.reason) + </p>;
+        });
+    </script>
 </head>
 <body>
 
@@ -28,19 +38,19 @@
             FA OFFICE
         </div>    
         <div class="economy-widgets">
-            <!-- Widget Botón Selector de Equipo -->
+            <!-- Widget BotÃ³n Selector de Equipo -->
             <div class="widget widget-logo-btn" onclick="openLogoModal()" title="Cambiar Franquicia Activa" style="flex-shrink:0;">
                 <img id="active-team-logo" src="" alt="Franquicia Activa" style="max-height: 50px; max-width: 50px; display: block;">
             </div>
-            <div class="widget" title="Límite Salarial base extraído directamente de la liga.">
+            <div class="widget" title="LÃ­mite Salarial base extraÃ­do directamente de la liga.">
                 <span class="text-muted" style="font-size:10px; text-transform:uppercase;">Disponible limite salarial</span>
                 <strong id="top-cap" class="data-num" style="font-size:13px;">$0</strong>
             </div>
-            <div class="widget" title="Presupuesto base extraído de la liga. Normalmente usado para renovar a tus propios jugadores (Derechos Bird/R).">
+            <div class="widget" title="Presupuesto base extraÃ­do de la liga. Normalmente usado para renovar a tus propios jugadores (Derechos Bird/R).">
                 <span class="text-muted" style="font-size:10px; text-transform:uppercase;">Disponible presupuesto</span>
                 <strong id="top-budget" class="data-num" style="font-size:13px;">$0</strong>
             </div>
-            <div class="widget" title="Mid-Level Exception. Bolsa de dinero extra para fichar sin consumir Límite Salarial.">
+            <div class="widget" title="Mid-Level Exception. Bolsa de dinero extra para fichar sin consumir LÃ­mite Salarial.">
                 <span class="text-muted" style="font-size:10px; text-transform:uppercase;">Disponible MLE</span>
                 <strong id="top-mle" class="data-num" style="font-size:13px;">$0</strong>
             </div>
@@ -48,7 +58,7 @@
                 <span style="color: var(--accent-blue); font-size:10px; text-transform:uppercase;">Cap Hold retenido <span style="font-size:8px;">[+]</span></span>
                 <strong id="top-ch" class="data-num" style="font-size:13px;">$0</strong>
             </div>
-            <div class="widget highlight" title="Límite Salarial REAL con el que cuentas para fichar a jugadores externos tras descontar tus Cap Holds.">
+            <div class="widget highlight" title="LÃ­mite Salarial REAL con el que cuentas para fichar a jugadores externos tras descontar tus Cap Holds.">
                 <span style="color: var(--accent-blue); font-size:10px; text-transform:uppercase;">Efectivo LS (-Cap Hold)</span>
                 <strong id="top-efectivo" class="data-num" style="font-size:13px;">$0</strong>
             </div>
@@ -56,7 +66,7 @@
                 <span class="text-muted" style="font-size:10px; text-transform:uppercase;">Efectivo presupuesto (-Firmas retrasadas)</span>
                 <strong id="top-bud-efectivo" class="data-num" style="font-size:13px;">$0</strong>
             </div>
-            <div class="widget" title="Número de jugadores en la plantilla (calculado desde players.csv).">
+            <div class="widget" title="NÃºmero de jugadores en la plantilla (calculado desde players.csv).">
                 <span class="text-muted" style="font-size:10px; text-transform:uppercase;">Jugadores</span>
                 <strong id="top-nplayers" class="data-num" style="font-size:13px;">0</strong>
             </div>
@@ -88,8 +98,8 @@
                             <th title="Edad del Jugador">Edad</th>
                             <th title="Derechos Bird">Bird</th>
                             <th>R</th>
-                            <th>Salario Mínimo</th>
-                            <th>Salario Máximo</th>
+                            <th>Salario MÃ­nimo</th>
+                            <th>Salario MÃ¡ximo</th>
                             <th>Cap Hold</th>
                             <th>Ronda</th>
                         </tr>
@@ -157,16 +167,16 @@
                 </div>
             </div>
             
-            <!-- Botón SIMULADOR GLOBAL alineado con la columna derecha (BLOQUEADO) -->
-            <button disabled style="position: absolute; bottom: -45px; right: 0; background: #374151; color: #d1d5db; border: 1px solid #4b5563; padding: 10px 16px; font-size: 12px; border-radius: 6px; font-weight: 600; cursor: not-allowed; opacity: 0.5; box-shadow: 0 4px 6px rgba(0,0,0,0.5);">
-                SIMULADOR GLOBAL (Pronto)
+            <!-- BotÃ³n SIMULADOR GLOBAL alineado con la columna derecha -->
+            <button onclick="window.location.href='simulador.html'" style="position: absolute; bottom: -45px; right: 0; background: var(--accent-blue); color: #fff; border: none; padding: 10px 16px; font-size: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.5); transition: 0.2s;">
+                SIMULADOR GLOBAL
             </button>
         </div>
     </div>
 
     <!-- Fin Main Content -->
 
-    <!-- Modal de Selección de Logo -->
+    <!-- Modal de SelecciÃ³n de Logo -->
     <div id="logo-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
         <div style="background:var(--bg-panel); border:1px solid var(--border-subtle); border-radius:12px; padding:20px; max-width:800px; width:90%; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -179,7 +189,7 @@
         </div>
     </div>
 
-    <!-- Modal de Interacción con Rival -->
+    <!-- Modal de InteracciÃ³n con Rival -->
     <div id="rival-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
         <div style="background:var(--bg-panel); border:1px solid var(--border-subtle); border-radius:12px; padding:20px; max-width:900px; width:95%; min-height: 500px; box-shadow:0 10px 40px rgba(0,0,0,0.9); display: flex; flex-direction: column; position:relative;">
             <button onclick="closeRivalModal()" style="position:absolute; top:15px; right:20px; background:transparent; border:none; color:var(--text-muted); font-size:28px; cursor:pointer; padding:0; z-index:10;">&times;</button>
@@ -189,7 +199,7 @@
                 </h2>
             </div>
             <div id="rival-modal-content" style="flex: 1; overflow-y: auto;">
-                <p class="text-muted" style="text-align:center; margin-top: 50px;">Ventana de interacción en construcción...</p>
+                <p class="text-muted" style="text-align:center; margin-top: 50px;">Ventana de interacciÃ³n en construcciÃ³n...</p>
                 <!-- Se rellena por JS -->
             </div>
         </div>
@@ -214,10 +224,13 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/reglas.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/app.js"></script>
+    <!-- Scripts (orden de carga: constants â†’ reglas â†’ ui â†’ app) -->
+    <script src="js/shared/constants.js?v=8"     ></script>
+    <script src="js/reglas.js?v=8"     ></script>
+    <script src="js/ui.js?v=8"     ></script>
+    <script src="js/app.js?v=8"     ></script>
 </body>
 </html>
+
+
 

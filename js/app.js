@@ -1,74 +1,44 @@
-// Archivos locales CSV
-const URL_JUGADORES = "players.csv";
-const URL_ECONOMIA = "economia.csv";
-const TEAM_LOGOS = {
-    "Atlanta Hawks": "imgi_287_atl.png",
-    "Boston Celtics": "imgi_267_bos.png",
-    "Brooklyn Nets": "imgi_268_bkn.png",
-    "Charlotte Hornets": "imgi_288_cha.png",
-    "Chicago Bulls": "imgi_272_chi.png",
-    "Cleveland Cavaliers": "imgi_273_cle.png",
-    "Dallas Mavericks": "imgi_292_dal.png",
-    "Denver Nuggets": "imgi_277_den.png",
-    "Detroit Pistons": "imgi_274_det.png",
-    "Golden State Warriors": "imgi_282_gs.png",
-    "Houston Rockets": "imgi_293_hou.png",
-    "Indiana Pacers": "imgi_275_ind.png",
-    "Los Angeles Clippers": "imgi_283_lac.png",
-    "Los Angeles Lakers": "imgi_284_lal.png",
-    "Memphis Grizzlies": "imgi_294_mem.png",
-    "Miami Heat": "imgi_289_mia.png",
-    "Milwaukee Bucks": "imgi_276_mil.png",
-    "Minnesota Timberwolves": "imgi_278_min.png",
-    "New Orleans Pelicans": "imgi_295_no.png",
-    "New York Knicks": "imgi_269_ny.png",
-    "Oklahoma City Thunder": "imgi_279_okc.png",
-    "Orlando Magic": "imgi_290_orl.png",
-    "Philadelphia 76ers": "imgi_270_phi.png",
-    "Phoenix Suns": "imgi_285_phx.png",
-    "Portland Trail Blazers": "imgi_280_por.png",
-    "Sacramento Kings": "imgi_286_sac.png",
-    "San Antonio Spurs": "imgi_296_sa.png",
-    "Toronto Raptors": "imgi_271_tor.png",
-    "Utah Jazz": "imgi_281_utah.png",
-    "Washington Wizards": "imgi_291_wsh.png"
-};
+/**
+ * app.js — Lógica principal de FA Office
+ * =======================================
+ * Depende de: js/shared/constants.js, js/reglas.js, js/ui.js
+ * TEAM_LOGOS y CSV_URLS vienen de shared/constants.js
+ */
+
+// === ESTADO GLOBAL ===
 
 let dbEquipos_Base = [];
 let dbJugadores_Base = [];
 
-let allTeams = [];
+let allTeams    = [];
 let livePlayers = [];
-let activeTeam = null;
+let activeTeam  = null;
 let activePlayerId = null;
 
-// Global Simulator State
-let isGlobalSimOpen = false;
-let globalSimActivePlayerId = null;
-let globalSimActiveTeamName = null;
+let isGlobalSimOpen       = false;
+let globalSimActivePlayerId  = null;
+let globalSimActiveTeamName  = null;
 
-// Constantes SVG para el icono de estrella (favorito)
+// Paths SVG para el icono de estrella (favorito)
 const STAR_PATH_FILLED = "M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.692c.197-.39.73-.39.927 0l2.184 4.427 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z";
 const STAR_PATH_EMPTY  = "M2.866 14.85c-.078.444.368.791.746.593l4.39-2.256 4.389 2.256c.377.197.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z";
+
+// === ARRANQUE ===
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
+// === INICIALIZACIÓN ===
+
 function initApp() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'flex';
-    
-    // Fetching archivos CSV locales
+
+    // Carga de archivos CSV locales (rutas definidas en shared/constants.js)
     Promise.all([
-        fetch(URL_JUGADORES, { cache: "no-store" }).then(res => {
-            if (!res.ok) throw new Error("No se pudo cargar players.csv");
-            return res.text();
-        }),
-        fetch(URL_ECONOMIA, { cache: "no-store" }).then(res => {
-            if (!res.ok) throw new Error("No se pudo cargar economia.csv");
-            return res.text();
-        })
+        window.fetchCSV(CSV_URLS.players),
+        window.fetchCSV(CSV_URLS.economia)
     ]).then(([csvPlayers, csvEconomy]) => {
         
         const delimiterPlayers = csvPlayers.split('\n')[0].includes(';') ? ';' : ',';
@@ -118,13 +88,16 @@ function initApp() {
             t.numPlayers = rostersCount[t.id] || 0;
         });
 
+        let startR3Idx = rawPlayers.findIndex(x => x.Player === "C.J. McCollum");
+        let endR3Idx = rawPlayers.findIndex(x => x.Player === "Tari Eason");
+
         // Mapear Jugadores (Solo FA)
         dbJugadores_Base = rawPlayers.filter(p => {
             const t1Val = parseFloat(p.t1) || 0;
             return t1Val === 0 || p.team_id === "31";
         }).map((p, idx) => {
-            const minSal = parseCurrency(p['Minimum'] || p['Minimum Sa'] || p['Minimum Salary'] || p.MinimumSalary || "0");
-            const maxSal = parseCurrency(p['Maximum'] || p['Maximum Sa'] || p['Maximum Salary'] || p.MaximumSalary || "0");
+            let minSal = parseCurrency(p['Minimum'] || p['Minimum Sa'] || p['Minimum Salary'] || p.MinimumSalary || "0");
+            let maxSal = parseCurrency(p['Maximum'] || p['Maximum Sa'] || p['Maximum Salary'] || p.MaximumSalary || "0");
             const capHold = parseCurrency(p['caphold'] || p['Cap Hold'] || p.CapHold || "0");
             const isR = (p.FA && p.FA.trim().toUpperCase() === 'R');
             const isBird = (parseInt(p.Bird) >= 3);
@@ -132,11 +105,31 @@ function initApp() {
             const teamName = teamObj ? teamObj.name : "FA";
 
             const rating = parseInt(p.Rating) || 0;
+            let isR3 = false;
             let calcRound = "5";
             if (rating >= 85) calcRound = "1";
             else if (rating >= 82) calcRound = "2";
-            else if (rating >= 80) calcRound = "3";
+            else if (rating >= 80) { calcRound = "3"; isR3 = true; }
             else if (rating >= 75) calcRound = "4";
+
+            let originalIdx = rawPlayers.indexOf(p);
+            if (startR3Idx !== -1 && endR3Idx !== -1 && originalIdx >= startR3Idx && originalIdx <= endR3Idx) {
+                if (p.Player !== "Shaedon Sharpe" && p.Player !== "Walker Kessler") {
+                    calcRound = "3";
+                    isR3 = true;
+                }
+            }
+
+            if (isR3) {
+                calcRound = "4";
+                minSal = minSal * 0.90;
+                maxSal = maxSal * 0.90;
+            }
+
+            if (p.Player === "C.J. McCollum" || p.Player === "Ty Jerome") {
+                minSal = minSal * 0.85;
+                maxSal = maxSal * 0.85;
+            }
 
             return {
                 id: idx + 1,
@@ -149,8 +142,12 @@ function initApp() {
                 r: p.FA || "",
                 min: minSal,
                 max: maxSal,
+                baseMin: minSal,
+                baseMax: maxSal,
                 capHold: capHold,
                 round: calcRound,
+                baseRound: calcRound,
+                roundChangedAt: 0,
                 originTeam: teamName,
                 derechos: isR || isBird,
                 renounced: false
@@ -174,6 +171,8 @@ function initApp() {
     });
 }
 
+// === MOTOR FINANCIERO ===
+
 window.recalculateCapHolds = function() {
     // 1. Resetear todos los equipos en allTeams a sus valores base
     allTeams.forEach(t => {
@@ -185,6 +184,7 @@ window.recalculateCapHolds = function() {
             t.mle = baseTeam.mle;
             t.budgetEfectivo = baseTeam.budgetEfectivo;
             t.cap = baseTeam.cap;
+            t.budget = baseTeam.budget;
         }
     });
 
@@ -219,10 +219,18 @@ window.recalculateCapHolds = function() {
             currentActive.simSignedCount = 0;
             livePlayers.forEach(p => {
                 if (p.simulatedSigned && p.simTx && p.simTx.team === activeTeam.name) {
-                    currentActive.simSignedCount++;
                     const tx = p.simTx;
+                    if (!tx.isPreloaded) {
+                        currentActive.simSignedCount++;
+                    }
                     
-                    currentActive.budgetEfectivo -= tx.salary;
+                    if (tx.isDelayed) {
+                        if (!tx.isPreloaded) {
+                            currentActive.budgetEfectivo -= (p.capHold || 0);
+                        }
+                    } else {
+                        currentActive.budgetEfectivo -= tx.salary;
+                    }
                     
                     if (!tx.isDelayed) {
                         if (tx.exception === 'cap' || tx.exception === 'bird') {
@@ -254,6 +262,8 @@ window.recalculateCapHolds = function() {
             
             t.efectivo += totalFreespotBonus;
             t.budgetEfectivo += totalFreespotBonus;
+            t.cap += totalFreespotBonus;
+            t.budget += totalFreespotBonus;
         }
     });
 
@@ -263,6 +273,7 @@ window.recalculateCapHolds = function() {
         if (currentActive) {
             activeTeam.cap = currentActive.cap;
             activeTeam.efectivo = currentActive.efectivo;
+            activeTeam.budget = currentActive.budget;
             activeTeam.budgetEfectivo = currentActive.budgetEfectivo;
             activeTeam.capHoldTotal = currentActive.capHoldTotal;
             activeTeam.mle = currentActive.mle;
@@ -275,6 +286,8 @@ window.recalculateCapHolds = function() {
         window.renderTopTeamsBar();
     }
 }
+
+// === SELECTOR DE FRANQUICIA ===
 
 window.openLogoModal = function() {
     document.getElementById('logo-modal').style.display = 'flex';
@@ -387,6 +400,26 @@ window.resetSimulation = function() {
     allTeams = structuredClone(dbEquipos_Base);
     livePlayers = structuredClone(dbJugadores_Base);
     
+    // FIRMAS RETRASADAS FIJAS (ya contempladas en el CSV de economía)
+    const fixedDelayed = [
+        { name: "Paolo Banchero", team: "New York Knicks" },
+        { name: "Chet Holmgren", team: "Detroit Pistons" },
+        { name: "Jarrett Allen", team: "Los Angeles Lakers" },
+        { name: "Michael Porter Jr.", team: "Atlanta Hawks" },
+        { name: "Jalen Duren", team: "Atlanta Hawks" },
+        { name: "DeMar DeRozan", team: "Detroit Pistons" },
+        { name: "Shaedon Sharpe", team: "New York Knicks" },
+        { name: "Walker Kessler", team: "Orlando Magic" },
+        { name: "Mark Williams", team: "Memphis Grizzlies" }
+    ];
+    fixedDelayed.forEach(fd => {
+        let p = livePlayers.find(pl => pl.name === fd.name && pl.originTeam === fd.team);
+        if (p) {
+            p.simulatedSigned = true;
+            p.simTx = { salary: p.capHold, exception: 'bird', isDelayed: true, isPreloaded: true, team: fd.team };
+        }
+    });
+    
     activeTeam = allTeams.find(t => t.name === currentTeamName);
     
     activePlayerId = null;
@@ -432,6 +465,7 @@ function renderTopEconomy() {
     }
 }
 
+// === TABLA DE AGENTES LIBRES ===
 
 function renderStudyTable() {
     const tbody = document.getElementById('study-tbody');
@@ -445,15 +479,16 @@ function renderStudyTable() {
         tr.setAttribute('data-id', p.id);
         if(p.id === activePlayerId) tr.classList.add('selected');
 
+        let rowBorderColor = 'transparent';
         // CALCULAR ESTADO DE PUJA PARA ESTE JUGADOR
         if (activeTeam) {
-            let isBoss = (p.derechos && p.originTeam === activeTeam.name);
+            let isBoss = (p.derechos && p.originTeam === activeTeam.name && p.renounced !== true);
             let canBidImmediate = false;
             let canBidPotential = false;
             
             if (isBoss) {
                 canBidImmediate = activeTeam.budgetEfectivo >= p.min;
-                canBidPotential = false; // Cap holds don't affect budget, so no 'potential' via renouncing
+                canBidPotential = activeTeam.budget >= p.min;
             } else {
                 canBidImmediate = (activeTeam.efectivo >= p.min) || (activeTeam.mle >= p.min);
                 let maxPotentialCap = activeTeam.efectivo + activeTeam.capHoldTotal;
@@ -461,21 +496,23 @@ function renderStudyTable() {
             }
             
             if (p.simulatedSigned && p.simTx && p.simTx.team === activeTeam.name) {
-                tr.style.borderLeft = '4px solid var(--accent-green)';
+                rowBorderColor = 'var(--accent-green)';
                 tr.style.backgroundColor = 'rgba(34, 197, 94, 0.2)';
                 tr.style.opacity = '0.8';
             } else if (activeTeam.numPlayers >= 15 && !isBoss) {
+                rowBorderColor = 'gray';
                 tr.style.opacity = '0.3';
                 tr.style.filter = 'grayscale(0.8)';
             } else if (canBidImmediate) {
-                tr.style.borderLeft = '4px solid var(--accent-green)';
+                rowBorderColor = 'var(--accent-green)';
                 tr.style.backgroundColor = 'rgba(34, 197, 94, 0.05)';
             } else if (canBidPotential) {
-                tr.style.borderLeft = '4px solid var(--accent-orange)';
-                tr.style.backgroundColor = 'rgba(245, 158, 11, 0.05)';
+                rowBorderColor = 'var(--accent-yellow)';
+                tr.style.backgroundColor = 'rgba(234, 179, 8, 0.05)';
                 tr.style.opacity = '0.5'; // Atenuar a los que solo se puede aspirar renunciando
                 tr.style.filter = 'grayscale(0.3)';
             } else {
+                rowBorderColor = 'gray';
                 tr.style.opacity = '0.2'; // Atenuar fuertemente a los imposibles
                 tr.style.filter = 'grayscale(0.9)';
             }
@@ -500,7 +537,7 @@ function renderStudyTable() {
 
         tr.innerHTML = `
             <!-- Columna de estrellas eliminada -->
-            <td>
+            <td style="border-left: 4px solid ${rowBorderColor};">
                 <div style="display: flex; align-items: center;">
                     <img src="${getPlayerPhotoPath(p.name)}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; object-fit: cover; background: var(--bg-surface);">
                     <strong>${p.name}</strong>
@@ -611,10 +648,8 @@ window.toggleStar = function(event, playerId) {
 }
 
 
+// === SIMULADOR DE FIRMAS ===
 
-
-
-// Simulador de firmas
 window.updateSimulator = function(p) {
     const panel = document.getElementById('simulator-panel');
     if (!panel) return;
@@ -834,7 +869,11 @@ window.updateSimEconomySummary = function(previewTx = null) {
         const isDelayed = previewTx.isDelayed;
         const capHold = previewTx.capHold || 0;
         
-        bud -= salary;
+        if (isDelayed) {
+            bud -= capHold;
+        } else {
+            bud -= salary;
+        }
         
         if (!isDelayed) {
             if (exception === 'cap' || exception === 'bird') {
@@ -951,7 +990,3 @@ window.makeSigningOfficial = function(playerId) {
     if (typeof updateSimEconomySummary === "function") updateSimEconomySummary();
     if (typeof renderSignedPlayersList === "function") renderSignedPlayersList();
 }
-
-// ==========================================
-// SIMULADOR GLOBAL LOGIC
-// =====================// Funciones de Simulador Global eliminadas para mantener el archivo limpio y optimizado para FA Office.

@@ -4,12 +4,10 @@ let currentSort = { column: 'rating', asc: false };
 
 async function init() {
     try {
-        const [playersRes, ecoRes] = await Promise.all([
-            fetch('players.csv'),
-            fetch('economia.csv')
+        const [playersText, ecoText] = await Promise.all([
+            window.fetchCSV('players.csv'),
+            window.fetchCSV('economia.csv')
         ]);
-        const playersText = await playersRes.text();
-        const ecoText = await ecoRes.text();
         
         const delimiterEco = ecoText.split('\n')[0].includes(';') ? ';' : ',';
         const delimiterPlayers = playersText.split('\n')[0].includes(';') ? ';' : ',';

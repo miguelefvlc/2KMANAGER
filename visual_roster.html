@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400">
+    <title>Visual Roster - 2K OFFICE</title>
+    <!-- Fuentes: Inter para UI limpia, Outfit para encabezados -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@800&display=swap" rel="stylesheet">
+    <!-- PapaParse para leer CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/visual_roster.css">
+</head>
+<body class="vr-body">
+    <div id="vr-bg-layer"></div>
+
+    <!-- Botón volver (se configura en JS) -->
+    <a href="#" id="vr-back-btn" class="home-btn" title="Volver a Roster">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+        </svg>
+    </a>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Cargando Roster...</p>
+    </div>
+
+    <div class="vr-layout" id="vr-content" style="display: none;">
+        
+        <div class="vr-header">
+            <div class="vr-logo-wrapper">
+                <img src="" id="vr-team-logo" alt="Logo" class="vr-team-logo">
+                <div class="vr-logo-glow"></div>
+            </div>
+            <h1 id="vr-team-name">CARGANDO...</h1>
+        </div>
+
+        <div class="vr-grid" id="vr-grid">
+            <!-- Player cards injected here by JS -->
+        </div>
+
+        <div class="vr-legend">
+            <span class="legend-item"><span class="legend-color legend-verde"></span> Transferible</span>
+            <span class="legend-item"><span class="legend-color legend-naranja"></span> Difícil salida</span>
+            <span class="legend-item"><span class="legend-color legend-rojo"></span> Intransferible</span>
+        </div>
+
+    </div>
+
+    <!-- Trade Status Modal -->
+    <div id="trade-modal" class="vr-modal" style="display: none;">
+        <div class="vr-modal-content">
+            <h3>Estado de Traspaso</h3>
+            <p id="modal-player-name"></p>
+            <div class="modal-options">
+                <button class="modal-btn btn-verde" data-status="verde">Transferible</button>
+                <button class="modal-btn btn-naranja" data-status="naranja">Difícil salida</button>
+                <button class="modal-btn btn-rojo" data-status="rojo">Intransferible</button>
+                <button class="modal-btn btn-none" data-status="none">Sin marcar (Reset)</button>
+            </div>
+            <button id="modal-close" class="modal-close-btn">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/shared/constants.js"></script>
+    <script src="js/shared/csv_service.js"></script>
+    <script src="js/shared/storage_service.js"></script>
+    <script src="js/visual_roster.js"></script>
+</body>
+</html>

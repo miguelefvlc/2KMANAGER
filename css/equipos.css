@@ -6,8 +6,6 @@
     max-width: 1200px;
 }
 
-
-
 .header-container h1 {
     font-family: 'Outfit', sans-serif;
     font-size: 3rem;
@@ -75,21 +73,59 @@
 
 .team-card {
     display: flex;
-    justify-content: center;
+    flex-direction: row;
     align-items: center;
-    transition: all 0.2s;
+    justify-content: flex-start;
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 8px 10px;
+    gap: 10px;
+    transition: all 0.3s;
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    max-width: 170px;
+    margin: 0 auto;
+}
+
+.team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-logo);
+    background-size: 150%;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.08;
+    z-index: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+}
+
+.team-card:hover::before {
+    opacity: 0.15;
+    background-size: 160%;
 }
 
 .team-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
 }
 
 .team-logo {
-    width: 65px;
-    height: 65px;
+    width: 45px;
+    height: 45px;
     object-fit: contain;
     transition: transform 0.2s;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .team-card:hover .team-logo {
@@ -97,7 +133,37 @@
 }
 
 .team-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.team-name {
     display: none;
+}
+
+.team-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: #64748b;
+    letter-spacing: 0px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.stat-val {
+    font-weight: 500;
+    color: #94a3b8;
 }
 
 @media (max-width: 992px) {

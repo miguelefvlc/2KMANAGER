@@ -80,12 +80,12 @@ window.scanThreatsLogic = function(player, allTeams, activeTeamName) {
                 <div style="font-size:10px; color:var(--text-color); margin-top: 6px; padding-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1); ${opacityStyle}">
                     <div style="margin-bottom:2px; display:flex; flex-wrap:nowrap; gap:4px; align-items:center;">
                         <span style="opacity:0.7; white-space:nowrap;">Puede ofrecer:</span> 
-                        <strong style="color:var(--accent-blue); white-space:nowrap;">$${(max4Yrs/1000000).toFixed(1)}M = ${(S/1000000).toFixed(1)}Mx4</strong>
+                        <strong style="color:var(--accent-blue); white-space:nowrap;">${formatCurrency(max4Yrs)} = ${formatCurrency(S)}x4</strong>
                     </div>
                     <div style="display:flex; flex-wrap:nowrap; gap:4px; align-items:center;">
                         <span style="opacity:0.7; white-space:nowrap;">Para sorteo (80%):</span> 
                         <strong style="color:var(--accent-orange); white-space:nowrap; display:flex; align-items:center;" class="annual-req-display">
-                            $${(sorteo80_total/1000000).toFixed(1)}M = <span class="annual-val" style="margin-right:2px;">$${(userStartingSalaryNeeded/1000000).toFixed(1)}M</span>x
+                            ${formatCurrency(sorteo80_total)} = <span class="annual-val" style="margin-right:2px;">${formatCurrency(userStartingSalaryNeeded)}</span>x
                             <div class="yr-seg-group" data-total="${sorteo80_total}" data-pmax="${player.max}" data-pmin="${player.min}">
                                 <span class="yr-seg" onclick="updateForecastYrs(this, 1, event)">1</span>
                                 <span class="yr-seg" onclick="updateForecastYrs(this, 2, event)">2</span>
@@ -108,7 +108,7 @@ window.scanThreatsLogic = function(player, allTeams, activeTeamName) {
                     </div>
                 </div>
                 <div style="font-size:11px; text-align:right; ${opacityStyle}">
-                    <span class="text-muted">LS-CH: <span class="data-num ${efClass}" style="font-weight:bold; font-size:13px;">$${(t.efectivo/1000000).toFixed(1)}M</span></span>
+                    <span class="text-muted">LS-CH: <span class="data-num ${efClass}" style="font-weight:bold; font-size:13px;">${formatCurrency(t.efectivo)}</span></span>
                 </div>
                 ${forecastHTML}
             </div>
@@ -148,7 +148,7 @@ window.updateForecastYrs = function(el, years, event) {
     if(parent) {
         let valEl = parent.querySelector('.annual-val');
         if(valEl) {
-            valEl.innerText = '$' + (reqAnnual / 1000000).toFixed(1) + 'M';
+            valEl.innerText = formatCurrency(reqAnnual);
             parent.style.color = color;
         }
     }
@@ -244,7 +244,7 @@ window.openRivalModal = function(teamName) {
                 <td data-label="Min / Max" class="data-num text-muted" style="font-size:11px;">${formatCurrency(fa.min)} - ${formatCurrency(fa.max)}</td>
                 <td data-label="Cap Hold" class="data-num color-red" style="${capHoldDecor}">-${formatCurrency(fa.capHold)}</td>
                 <td data-label="Mantener Derechos" style="text-align:center;">
-                    <input type="checkbox" class="sim-ch-checkbox" data-id="${fa.id}" data-ch="${fa.capHold}" ${isChecked} onchange="simulateRivalEconomy('${teamName}')" style="cursor:pointer; width:18px; height:18px;">
+                    ${fa.simulatedSigned ? '<span style="font-size:10px; font-weight:bold; color:var(--accent-green);">FIRMADO</span>' : `<input type="checkbox" class="sim-ch-checkbox" data-id="${fa.id}" data-ch="${fa.capHold}" ${isChecked} onchange="simulateRivalEconomy('${teamName}')" style="cursor:pointer; width:18px; height:18px;">`}
                 </td>
             </tr>`;
         });
@@ -271,6 +271,16 @@ window.simulateRivalEconomy = function(teamName) {
         if(player) {
             player.renounced = !cb.checked;
             player.derechos = cb.checked;
+        }
+        
+        // Instant visual feedback for row
+        let tr = cb.closest('tr');
+        if (tr) {
+            tr.style.opacity = !cb.checked ? "0.5" : "1";
+            let tdCapHold = tr.querySelector('.color-red');
+            if (tdCapHold) {
+                tdCapHold.style.textDecoration = !cb.checked ? "line-through" : "none";
+            }
         }
     });
 
@@ -366,7 +376,7 @@ window.openActiveTeamCHModal = function() {
                 <td data-label="Min / Max" class="data-num text-muted" style="font-size:11px;">${formatCurrency(fa.min)} - ${formatCurrency(fa.max)}</td>
                 <td data-label="Cap Hold" class="data-num color-red" style="${capHoldDecor}">-${formatCurrency(fa.capHold)}</td>
                 <td data-label="Mantener Derechos" style="text-align:center;">
-                    <input type="checkbox" class="sim-active-ch-checkbox" data-id="${fa.id}" ${isChecked} onchange="simulateActiveEconomy()" style="cursor:pointer; width:18px; height:18px;">
+                    ${fa.simulatedSigned ? '<span style="font-size:10px; font-weight:bold; color:var(--accent-green);">FIRMADO</span>' : `<input type="checkbox" class="sim-active-ch-checkbox" data-id="${fa.id}" ${isChecked} onchange="simulateActiveEconomy()" style="cursor:pointer; width:18px; height:18px;">`}
                 </td>
             </tr>`;
         });
@@ -386,6 +396,16 @@ window.simulateActiveEconomy = function() {
         if(player) {
             player.renounced = !cb.checked;
             player.derechos = cb.checked;
+        }
+        
+        // Instant visual feedback for row
+        let tr = cb.closest('tr');
+        if (tr) {
+            tr.style.opacity = !cb.checked ? "0.5" : "1";
+            let tdCapHold = tr.querySelector('.color-red');
+            if (tdCapHold) {
+                tdCapHold.style.textDecoration = !cb.checked ? "line-through" : "none";
+            }
         }
     });
 

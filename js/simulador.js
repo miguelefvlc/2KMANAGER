@@ -1,74 +1,44 @@
-// Archivos locales CSV
-const URL_JUGADORES = "players.csv";
-const URL_ECONOMIA = "economia.csv";
-const TEAM_LOGOS = {
-    "Atlanta Hawks": "imgi_287_atl.png",
-    "Boston Celtics": "imgi_267_bos.png",
-    "Brooklyn Nets": "imgi_268_bkn.png",
-    "Charlotte Hornets": "imgi_288_cha.png",
-    "Chicago Bulls": "imgi_272_chi.png",
-    "Cleveland Cavaliers": "imgi_273_cle.png",
-    "Dallas Mavericks": "imgi_292_dal.png",
-    "Denver Nuggets": "imgi_277_den.png",
-    "Detroit Pistons": "imgi_274_det.png",
-    "Golden State Warriors": "imgi_282_gs.png",
-    "Houston Rockets": "imgi_293_hou.png",
-    "Indiana Pacers": "imgi_275_ind.png",
-    "Los Angeles Clippers": "imgi_283_lac.png",
-    "Los Angeles Lakers": "imgi_284_lal.png",
-    "Memphis Grizzlies": "imgi_294_mem.png",
-    "Miami Heat": "imgi_289_mia.png",
-    "Milwaukee Bucks": "imgi_276_mil.png",
-    "Minnesota Timberwolves": "imgi_278_min.png",
-    "New Orleans Pelicans": "imgi_295_no.png",
-    "New York Knicks": "imgi_269_ny.png",
-    "Oklahoma City Thunder": "imgi_279_okc.png",
-    "Orlando Magic": "imgi_290_orl.png",
-    "Philadelphia 76ers": "imgi_270_phi.png",
-    "Phoenix Suns": "imgi_285_phx.png",
-    "Portland Trail Blazers": "imgi_280_por.png",
-    "Sacramento Kings": "imgi_286_sac.png",
-    "San Antonio Spurs": "imgi_296_sa.png",
-    "Toronto Raptors": "imgi_271_tor.png",
-    "Utah Jazz": "imgi_281_utah.png",
-    "Washington Wizards": "imgi_291_wsh.png"
-};
+/**
+ * simulador.js — Lógica del Simulador Global (todas las franquicias)
+ * ===================================================================
+ * Depende de: js/shared/constants.js, js/reglas.js, js/simulador_ui.js
+ * TEAM_LOGOS y CSV_URLS vienen de shared/constants.js
+ */
+
+// === ESTADO GLOBAL ===
 
 let dbEquipos_Base = [];
 let dbJugadores_Base = [];
 
-let allTeams = [];
+let allTeams    = [];
 let livePlayers = [];
-let activeTeam = null;
+let activeTeam  = null;
 let activePlayerId = null;
 
-// Global Simulator State
-let isGlobalSimOpen = false;
-let globalSimActivePlayerId = null;
-let globalSimActiveTeamName = null;
+let isGlobalSimOpen       = false;
+let globalSimActivePlayerId  = null;
+let globalSimActiveTeamName  = null;
 
-// Constantes SVG para el icono de estrella (favorito)
+// Paths SVG para el icono de estrella (favorito)
 const STAR_PATH_FILLED = "M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.692c.197-.39.73-.39.927 0l2.184 4.427 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z";
 const STAR_PATH_EMPTY  = "M2.866 14.85c-.078.444.368.791.746.593l4.39-2.256 4.389 2.256c.377.197.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z";
+
+// === ARRANQUE ===
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
+// === INICIALIZACIÓN ===
+
 function initApp() {
     const loader = document.getElementById('loader');
     if (loader) loader.style.display = 'flex';
-    
-    // Fetching archivos CSV locales
+
+    // Carga de archivos CSV locales (rutas definidas en shared/constants.js)
     Promise.all([
-        fetch(URL_JUGADORES, { cache: "no-store" }).then(res => {
-            if (!res.ok) throw new Error("No se pudo cargar players.csv");
-            return res.text();
-        }),
-        fetch(URL_ECONOMIA, { cache: "no-store" }).then(res => {
-            if (!res.ok) throw new Error("No se pudo cargar economia.csv");
-            return res.text();
-        })
+        window.fetchCSV(CSV_URLS.players),
+        window.fetchCSV(CSV_URLS.economia)
     ]).then(([csvPlayers, csvEconomy]) => {
         
         const delimiterPlayers = csvPlayers.split('\n')[0].includes(';') ? ';' : ',';
@@ -118,13 +88,16 @@ function initApp() {
             t.numPlayers = rostersCount[t.id] || 0;
         });
 
+        let startR3Idx = rawPlayers.findIndex(x => x.Player === "C.J. McCollum");
+        let endR3Idx = rawPlayers.findIndex(x => x.Player === "Tari Eason");
+
         // Mapear Jugadores (Solo FA)
         dbJugadores_Base = rawPlayers.filter(p => {
             const t1Val = parseFloat(p.t1) || 0;
             return t1Val === 0 || p.team_id === "31";
         }).map((p, idx) => {
-            const minSal = parseCurrency(p['Minimum'] || p['Minimum Sa'] || p['Minimum Salary'] || p.MinimumSalary || "0");
-            const maxSal = parseCurrency(p['Maximum'] || p['Maximum Sa'] || p['Maximum Salary'] || p.MaximumSalary || "0");
+            let minSal = parseCurrency(p['Minimum'] || p['Minimum Sa'] || p['Minimum Salary'] || p.MinimumSalary || "0");
+            let maxSal = parseCurrency(p['Maximum'] || p['Maximum Sa'] || p['Maximum Salary'] || p.MaximumSalary || "0");
             const capHold = parseCurrency(p['caphold'] || p['Cap Hold'] || p.CapHold || "0");
             const isR = (p.FA && p.FA.trim().toUpperCase() === 'R');
             const isBird = (parseInt(p.Bird) >= 3);
@@ -132,11 +105,37 @@ function initApp() {
             const teamName = teamObj ? teamObj.name : "FA";
 
             const rating = parseInt(p.Rating) || 0;
+            let isR3 = false;
             let calcRound = "5";
             if (rating >= 85) calcRound = "1";
             else if (rating >= 82) calcRound = "2";
-            else if (rating >= 80) calcRound = "3";
+            else if (rating >= 80) { calcRound = "3"; isR3 = true; }
             else if (rating >= 75) calcRound = "4";
+
+            let originalIdx = rawPlayers.indexOf(p);
+            if (startR3Idx !== -1 && endR3Idx !== -1 && originalIdx >= startR3Idx && originalIdx <= endR3Idx) {
+                if (p.Player !== "Shaedon Sharpe" && p.Player !== "Walker Kessler") {
+                    calcRound = "3";
+                    isR3 = true;
+                }
+            }
+
+            if (isR3) {
+                calcRound = "4";
+                minSal = minSal * 0.90;
+                maxSal = maxSal * 0.90;
+            }
+
+            if (calcRound === "4" && p.Player !== "Tim Hardaway Jr." && p.Player !== "Jaxson Hayes") {
+                calcRound = "5";
+                minSal = minSal * 0.90;
+                maxSal = maxSal * 0.90;
+            }
+
+            if (p.Player === "C.J. McCollum" || p.Player === "Ty Jerome") {
+                minSal = minSal * 0.85;
+                maxSal = maxSal * 0.85;
+            }
 
             return {
                 id: idx + 1,
@@ -149,8 +148,12 @@ function initApp() {
                 r: p.FA || "",
                 min: minSal,
                 max: maxSal,
+                baseMin: minSal,
+                baseMax: maxSal,
                 capHold: capHold,
                 round: calcRound,
+                baseRound: calcRound,
+                roundChangedAt: 0,
                 originTeam: teamName,
                 derechos: isR || isBird,
                 renounced: false
@@ -180,6 +183,7 @@ window.recalculateCapHolds = function() {
         let baseTeam = dbEquipos_Base.find(bt => bt.name === t.name);
         if (baseTeam) {
             t.capHoldSum = 0;
+            t.renounceableCapHolds = 0;
             t.capHoldTotal = 0;
             t.numPlayers = baseTeam.numPlayers;
             t.mle = baseTeam.mle;
@@ -202,6 +206,9 @@ window.recalculateCapHolds = function() {
                 let team = allTeams.find(t => t.name === p.originTeam);
                 if (team) {
                     team.capHoldSum += p.capHold;
+                    if (!p.simulatedSigned) {
+                        team.renounceableCapHolds += p.capHold;
+                    }
                 }
             }
         }
@@ -218,11 +225,20 @@ window.recalculateCapHolds = function() {
         currentActive.simSignedCount = 0;
         livePlayers.forEach(p => {
             if (p.simulatedSigned && p.simTx && p.simTx.team === currentActive.name) {
-                currentActive.simSignedCount++;
                 const tx = p.simTx;
+                if (!tx.isPreloaded) {
+                    currentActive.simSignedCount++;
+                }
                 
-                currentActive.budgetEfectivo -= tx.salary;
-                currentActive.budget -= tx.salary; // El presupuesto potencial también baja
+                if (tx.isDelayed) {
+                    if (!tx.isPreloaded) {
+                        currentActive.budgetEfectivo -= (p.capHold || 0);
+                        currentActive.budget -= (p.capHold || 0);
+                    }
+                } else {
+                    currentActive.budgetEfectivo -= tx.salary;
+                    currentActive.budget -= tx.salary; // El presupuesto potencial también baja
+                }
                 
                 if (!tx.isDelayed) {
                     if (tx.exception === 'cap' || tx.exception === 'bird') {
@@ -235,7 +251,9 @@ window.recalculateCapHolds = function() {
                     // Si está retrasada, su Cap Hold ya no se puede renunciar. 
                     // Por tanto, el Cap Potencial se reduce por este Cap Hold.
                     // (En el efectivo ya está restado desde el paso 3)
-                    currentActive.cap -= p.capHold;
+                    if (!tx.isPreloaded) {
+                        currentActive.cap -= p.capHold;
+                    }
                 }
             }
         });
@@ -256,6 +274,8 @@ window.recalculateCapHolds = function() {
             
             t.efectivo += totalFreespotBonus;
             t.budgetEfectivo += totalFreespotBonus;
+            t.cap += totalFreespotBonus;
+            t.budget += totalFreespotBonus;
         }
     });
 
@@ -391,6 +411,28 @@ window.resetSimulation = function() {
     allTeams = structuredClone(dbEquipos_Base);
     livePlayers = structuredClone(dbJugadores_Base);
     
+    // FIRMAS RETRASADAS FIJAS (ya contempladas en el CSV de economía)
+    const fixedDelayed = [
+        { name: "Paolo Banchero", team: "New York Knicks" },
+        { name: "Chet Holmgren", team: "Detroit Pistons" },
+        { name: "Jarrett Allen", team: "Los Angeles Lakers" },
+        { name: "Michael Porter Jr.", team: "Atlanta Hawks" },
+        { name: "Jalen Duren", team: "Atlanta Hawks" },
+        { name: "DeMar DeRozan", team: "Detroit Pistons" },
+        { name: "Shaedon Sharpe", team: "New York Knicks" },
+        { name: "Walker Kessler", team: "Orlando Magic" },
+        { name: "Mark Williams", team: "Memphis Grizzlies" },
+        { name: "Tim Hardaway Jr.", team: "Los Angeles Lakers" },
+        { name: "Jaxson Hayes", team: "Los Angeles Lakers" }
+    ];
+    fixedDelayed.forEach(fd => {
+        let p = livePlayers.find(pl => pl.name === fd.name && pl.originTeam === fd.team);
+        if (p) {
+            p.simulatedSigned = true;
+            p.simTx = { salary: p.capHold, exception: 'bird', isDelayed: true, isPreloaded: true, team: fd.team };
+        }
+    });
+    
     activePlayerId = null;
     const tName2 = document.getElementById('player-target-name');
     if (tName2) tName2.innerText = "Selecciona un objetivo...";
@@ -399,6 +441,9 @@ window.resetSimulation = function() {
     
     const list = document.getElementById('signed-players-list');
     if (list) list.innerHTML = '';
+    const hojaList = document.getElementById('hoja-ruta-list');
+    if (hojaList) hojaList.innerHTML = '<span class="text-muted text-small">Aún no hay firmas en la hoja de ruta.</span>';
+
     const simPanel = document.getElementById('simulator-panel');
     if (simPanel) simPanel.style.display = 'none';
 
@@ -406,6 +451,7 @@ window.resetSimulation = function() {
     renderTopEconomy();
     renderStudyTable();
     if (typeof updateSimEconomySummary === "function") updateSimEconomySummary();
+    if (typeof renderSignedPlayersList === "function") renderSignedPlayersList();
 }
 
 function renderTopEconomy() {
@@ -442,6 +488,18 @@ function renderStudyTable() {
     tbody.innerHTML = '';
     
     let starred = JSON.parse(localStorage.getItem('starred_players') || '[]');
+    
+    livePlayers.sort((a, b) => {
+        let rA = parseInt(a.round || 0);
+        let rB = parseInt(b.round || 0);
+        if (rA !== rB) return rA - rB;
+        
+        let cA = a.roundChangedAt || 0;
+        let cB = b.roundChangedAt || 0;
+        if (cA !== cB) return cB - cA; // Descending (recent first)
+        
+        return b.rating - a.rating;
+    });
     
     livePlayers.forEach(p => {
         let tr = document.createElement('tr');
@@ -516,7 +574,7 @@ function renderStudyTable() {
                     canBidPotential = t.budget >= p.min;
                 } else {
                     canBidImmediate = (t.efectivo >= p.min) || (t.mle >= p.min);
-                    canBidPotential = (t.cap >= p.min) || (t.mle >= p.min);
+                    canBidPotential = ((t.efectivo + t.renounceableCapHolds) >= p.min) || (t.mle >= p.min);
                 }
                 
                 if (canBidPotential || canBidImmediate) {
@@ -563,14 +621,18 @@ function renderStudyTable() {
                     <strong>${p.name}</strong>
                 </div>
             </td>
-            <td data-label="Equipo">${p.team}</td>
+            <td data-label="Equipo" style="text-align: center;" title="${p.team}">
+                <span class="text-muted" style="font-weight: 600; font-size: 12px;">${TEAM_ABBR[p.team] || p.team}</span>
+            </td>
             <td data-label="Pos">${p.pos}</td>
             <td data-label="Media" class="data-num">${p.rating}</td>
             <td data-label="Edad" class="data-num">${p.edad}</td>
             <td data-label="Bird" class="data-num" ${birdStyle}>${p.bird}</td>
             <td data-label="R" ${rStyle}>${p.r}</td>
             <td data-label="Aspirantes">${aspirantesHTML}</td>
-            <td data-label="Ronda">${p.round !== "0" ? `<span class="round-badge round-${p.round}">R${p.round}</span>` : ""}</td>
+            <td data-label="Ronda" onclick="event.stopPropagation(); openRoundSelector(${p.id})" style="cursor: pointer;" title="Cambiar de ronda">
+                ${p.round !== "0" ? `<span class="round-badge round-${p.round}">R${p.round}</span>` : ""}
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -807,6 +869,97 @@ window.signSimulatedPlayer = function(isDelayed = false) {
     }
 }
 
+function getRoundMultiplier(baseRound, currentRound) {
+    let b = parseInt(baseRound);
+    let c = parseInt(currentRound);
+    if (c === b) return 1.0;
+    
+    let multiplier = 1.0;
+    if (c > b) {
+        // Bajar de ronda => Descuento
+        for (let i = b; i < c; i++) {
+            if (i === 1) multiplier *= 0.85; // R1 -> R2
+            else if (i === 2) multiplier *= 0.85; // R2 -> R3
+            else if (i === 3) multiplier *= 0.90; // R3 -> R4
+            else if (i === 4) multiplier *= 0.90; // R4 -> R5
+            else if (i === 5) multiplier *= 0.90; // R5 -> R6
+            else if (i === 6) multiplier *= 0.90; // R6 -> R7
+        }
+    } else {
+        // Subir de ronda => Incremento ("se suma el % de la rebaja")
+        for (let i = b; i > c; i--) {
+            if (i === 2) multiplier *= 1.15; // R2 -> R1
+            else if (i === 3) multiplier *= 1.15; // R3 -> R2
+            else if (i === 4) multiplier *= 1.10; // R4 -> R3
+            else if (i === 5) multiplier *= 1.10; // R5 -> R4
+            else if (i === 6) multiplier *= 1.10; // R6 -> R5
+            else if (i === 7) multiplier *= 1.10; // R7 -> R6
+        }
+    }
+    return multiplier;
+}
+
+window.changePlayerRound = function(id, newRound) {
+    const p = livePlayers.find(pl => pl.id === id);
+    if (!p) return;
+    
+    p.round = newRound.toString();
+    p.roundChangedAt = Date.now();
+    
+    let multiplier = getRoundMultiplier(p.baseRound, p.round);
+    p.min = p.baseMin * multiplier;
+    p.max = p.baseMax * multiplier;
+    
+    renderStudyTable();
+    if (activePlayerId === id) {
+        selectStudyPlayer(id);
+    }
+    
+    // Si el modal global de firmas está abierto para este jugador, refrescar datos
+    if (window.globalSimPlayer && window.globalSimPlayer.id === id) {
+        refreshGlobalSignModal(p);
+        if (typeof checkGlobalSimCanSign === 'function') checkGlobalSimCanSign();
+    }
+}
+
+window.openRoundSelector = function(id) {
+    const p = livePlayers.find(pl => pl.id === id);
+    if (!p) return;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'round-selector-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0'; overlay.style.left = '0';
+    overlay.style.width = '100%'; overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.7)';
+    overlay.style.zIndex = '10000';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center'; overlay.style.justifyContent = 'center';
+    
+    let optionsHTML = '';
+    for (let i = 1; i <= 7; i++) {
+        let isCurrent = p.round == i;
+        let bg = isCurrent ? 'var(--accent-blue)' : 'var(--bg-panel)';
+        optionsHTML += `<button onclick="closeRoundSelector(); changePlayerRound(${id}, ${i})" style="width: 100%; padding: 10px; margin-bottom: 5px; background: ${bg}; color: var(--text-main); border: 1px solid var(--border-subtle); border-radius: 6px; cursor: pointer; font-weight: ${isCurrent ? 'bold' : 'normal'};">Ronda ${i}</button>`;
+    }
+    
+    overlay.innerHTML = `
+        <div style="background: var(--bg-surface); padding: 20px; border-radius: 12px; border: 1px solid var(--border-subtle); width: 250px; text-align: center;">
+            <h3 style="margin-top:0; margin-bottom: 5px;">Mover de Ronda</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 15px;"><strong>${p.name}</strong></p>
+            ${optionsHTML}
+            <button onclick="closeRoundSelector()" style="margin-top: 10px; padding: 6px 12px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; text-decoration: underline;">Cancelar</button>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+}
+
+window.closeRoundSelector = function() {
+    const overlay = document.getElementById('round-selector-overlay');
+    if (overlay) overlay.remove();
+}
+
 window.undoSimulatedSigning = function(playerId) {
     if (!activeTeam) return;
     const p = livePlayers.find(pl => pl.id == playerId);
@@ -842,69 +995,81 @@ window.editSimulatedSigning = function(id) {
     // Guardar valores antes de deshacer
     const oldSal = p.simTx.salary;
     const oldExc = p.simTx.exception;
+    const oldTeam = p.simTx.team;
     
     // Deshacer la firma
     undoSimulatedSigning(id);
     
-    // Seleccionar al jugador para abrir el panel
-    selectStudyPlayer(id);
+    // Abrir el modal global
+    openGlobalSignModal(id, oldTeam);
     
-    // Restaurar los valores en el panel (usamos timeout para asegurar que el DOM cargó)
+    // Restaurar los valores en el modal global
     setTimeout(() => {
-        const salaryInput = document.getElementById('sim-salary-input');
-        const exceptionSelect = document.getElementById('sim-exception-select');
+        const salaryInput = document.getElementById('global-sim-salary-input');
+        const exceptionSelect = document.getElementById('global-sim-exception-select');
         
         if (salaryInput) {
             salaryInput.value = oldSal;
-            // Disparamos el evento input para que se actualicen feedbacks si hay
             salaryInput.dispatchEvent(new Event('input'));
         }
         if (exceptionSelect) {
             exceptionSelect.value = oldExc;
+            exceptionSelect.dispatchEvent(new Event('change'));
         }
     }, 50);
 }
 
 window.updateSimEconomySummary = function() {
+    // Ya no se usa panel sim-economy-summary en el global, pero mantenemos por seguridad.
     const sumDiv = document.getElementById('sim-economy-summary');
     if (!sumDiv || !activeTeam) return;
-    
-    const anySigned = livePlayers.some(p => p.simulatedSigned && p.simTx && p.simTx.team === activeTeam.name);
     
     const negOrMain = (val) => val < 0 ? 'var(--accent-red)' : 'var(--text-main)';
     sumDiv.style.display = 'flex';
 
     const lsEl = document.getElementById('sim-sum-ls');
-    lsEl.innerText = formatCurrency(activeTeam.efectivo);
-    lsEl.style.color = negOrMain(activeTeam.efectivo);
+    if (lsEl) {
+        lsEl.innerText = formatCurrency(activeTeam.efectivo);
+        lsEl.style.color = negOrMain(activeTeam.efectivo);
+    }
     
     const presEl = document.getElementById('sim-sum-pres');
-    presEl.innerText = formatCurrency(activeTeam.budgetEfectivo);
-    presEl.style.color = negOrMain(activeTeam.budgetEfectivo);
+    if (presEl) {
+        presEl.innerText = formatCurrency(activeTeam.budgetEfectivo);
+        presEl.style.color = negOrMain(activeTeam.budgetEfectivo);
+    }
     
     const mleEl = document.getElementById('sim-sum-mle');
-    mleEl.innerText = formatCurrency(activeTeam.mle);
-    mleEl.style.color = negOrMain(activeTeam.mle);
+    if (mleEl) {
+        mleEl.innerText = formatCurrency(activeTeam.mle);
+        mleEl.style.color = negOrMain(activeTeam.mle);
+    }
 }
 
 window.renderSignedPlayersList = function() {
-    const list = document.getElementById('signed-players-list');
+    const list = document.getElementById('hoja-ruta-list');
     if (!list) return;
     list.innerHTML = '';
     
-    if (!activeTeam) return;
+    const signedPlayers = livePlayers.filter(p => p.simulatedSigned && p.simTx && !p.simTx.isPreloaded);
     
-    const signedPlayers = livePlayers.filter(p => p.simulatedSigned && p.simTx && p.simTx.team === activeTeam.name);
+    if (signedPlayers.length === 0) {
+        list.innerHTML = '<span class="text-muted text-small">Aún no hay firmas en la hoja de ruta.</span>';
+        return;
+    }
     
     signedPlayers.forEach(p => {
         const salary = p.simTx.salary;
         const exception = p.simTx.exception;
         const isDelayed = p.simTx.isDelayed;
+        const teamName = p.simTx.team;
         
         const photoUrl = typeof getPlayerPhotoPath === 'function' 
             ? getPlayerPhotoPath(p.name) 
             : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=1f2937&color=f3f4f6&rounded=true&size=32`;
             
+        const logoUrl = TEAM_LOGOS[teamName] ? `logos/${TEAM_LOGOS[teamName]}` : '';
+
         let excText = isDelayed ? "Firma Retrasada" : "";
         if (!isDelayed) {
             if (exception === 'cap') excText = "Cap Space";
@@ -915,11 +1080,11 @@ window.renderSignedPlayersList = function() {
 
         const folded = document.createElement('div');
         folded.className = 'panel';
-        folded.style.padding = '4px 8px';
+        folded.style.padding = '6px 10px';
         folded.style.display = 'flex';
         folded.style.alignItems = 'center';
         folded.style.justifyContent = 'space-between';
-        folded.style.borderLeft = '4px solid var(--accent-green)';
+        folded.style.borderLeft = isDelayed ? '4px solid var(--accent-blue)' : '4px solid var(--accent-green)';
         folded.style.marginTop = '0';
         folded.style.backgroundColor = 'var(--bg-panel)';
         folded.style.position = 'relative';
@@ -932,16 +1097,21 @@ window.renderSignedPlayersList = function() {
                 </svg>
             </button>
             <div style="display: flex; align-items: center; gap: 8px;">
-                <img src="${photoUrl}" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">
+                <img src="${photoUrl}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">
                 <div style="display: flex; flex-direction: column;">
-                    <strong style="font-size: 12px; color: var(--text-main); line-height: 1.1;">${p.name}</strong>
-                    <span class="text-muted text-xsmall" style="font-size: 10px;">${excText}</span>
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <strong style="font-size: 13px; color: var(--text-main); line-height: 1.1;">${p.name}</strong>
+                        ${p.round !== "0" ? `<span class="round-badge round-${p.round}" style="font-size: 9px; padding: 1px 4px; border-radius: 3px;">R${p.round}</span>` : ""}
+                    </div>
+                    <span class="text-muted text-xsmall" style="font-size: 10px; display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                        ${logoUrl ? `<img src="${logoUrl}" style="height: 12px;">` : ''} ${teamName} - ${excText}
+                    </span>
                 </div>
             </div>
             <div style="display: flex; gap: 4px; align-items: center; padding-right: 12px;">
-                <div class="data-num color-green" style="font-size: 11px; margin-right: 4px;">${formatCurrency(salary)}</div>
+                <div class="data-num color-green" style="font-size: 12px; margin-right: 4px;">${formatCurrency(salary)}</div>
                 <button onclick="editSimulatedSigning(${p.id})" style="background: transparent; border: none; color: var(--accent-blue); cursor: pointer; padding: 2px;" title="Modificar firma">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                     </svg>
                 </button>
@@ -961,6 +1131,18 @@ window.closeGlobalSignModal = function() {
     window.globalSimTeam = null;
 }
 
+function refreshGlobalSignModal(p) {
+    document.getElementById('global-sim-info-min').innerText = formatCurrency(p.min);
+    document.getElementById('global-sim-info-max').innerText = p.max > 0 ? formatCurrency(p.max) : 'N/A';
+    document.getElementById('global-sim-salary-input').value = p.min;
+    
+    const roundBtn = document.getElementById('global-sim-round-btn');
+    if (roundBtn) {
+        roundBtn.innerText = 'R' + p.round;
+        roundBtn.className = `round-badge round-${p.round}`;
+    }
+}
+
 window.openGlobalSignModal = function(playerId, teamName) {
     const p = livePlayers.find(pl => pl.id === playerId);
     const t = allTeams.find(tm => tm.name === teamName);
@@ -978,12 +1160,9 @@ window.openGlobalSignModal = function(playerId, teamName) {
         : `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=1f2937&color=f3f4f6&rounded=true&size=80`;
     document.getElementById('global-sim-player-photo').src = photoUrl;
     
-    const salaryInput = document.getElementById('global-sim-salary-input');
-    salaryInput.value = p.max > 0 ? p.max : p.min;
-    
-    document.getElementById('global-sim-info-min').innerText = formatCurrency(p.min);
-    document.getElementById('global-sim-info-max').innerText = p.max > 0 ? formatCurrency(p.max) : 'N/A';
     document.getElementById('global-sim-info-ch').innerText = formatCurrency(p.capHold);
+    
+    refreshGlobalSignModal(p);
     
     updateGlobalSimEconomySummary();
     renderGlobalSimCapHolds();
@@ -1040,7 +1219,7 @@ window.renderGlobalSimCapHolds = function() {
             
         myFAs.forEach(fa => {
             let isChecked = !fa.renounced ? "checked" : "";
-            let opacityStyle = fa.renounced ? "opacity: 0.5;" : "";
+            let opacityStyle = fa.renounced ? "opacity: 0.5;" : (fa.simTx && fa.simTx.isDelayed ? "opacity: 0.55; filter: grayscale(0.4);" : "");
             let capHoldDecor = fa.renounced ? "text-decoration: line-through;" : "";
 
             const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fa.name)}&background=1f2937&color=f3f4f6&rounded=true&size=32`;
@@ -1055,7 +1234,9 @@ window.renderGlobalSimCapHolds = function() {
                 <td class="data-num text-muted" style="font-size:11px;">${formatCurrency(fa.min)} - ${formatCurrency(fa.max)}</td>
                 <td class="data-num color-red" style="${capHoldDecor}">-${formatCurrency(fa.capHold)}</td>
                 <td style="text-align:center;">
-                    <input type="checkbox" class="global-sim-ch-checkbox" data-id="${fa.id}" ${isChecked} onchange="simulateGlobalActiveEconomy(${fa.id}, '${t.name}', this.checked)" style="cursor:pointer; width:18px; height:18px;">
+                    ${fa.simulatedSigned ? 
+                        `<span style="font-size:10px; font-weight:bold; color:${fa.simTx && fa.simTx.isDelayed ? 'var(--accent-orange)' : 'var(--accent-green)'};">${fa.simTx && fa.simTx.isDelayed ? 'POSPUESTO' : 'FIRMADO'}</span>` 
+                        : `<input type="checkbox" class="global-sim-ch-checkbox" data-id="${fa.id}" ${isChecked} onchange="simulateGlobalActiveEconomy(${fa.id}, '${t.name}', this.checked)" style="cursor:pointer; width:18px; height:18px;">`}
                 </td>
             </tr>`;
         });
@@ -1170,8 +1351,11 @@ window.executeGlobalSign = function(isDelayed) {
     recalculateCapHolds();
     renderTopEconomy();
     renderStudyTable();
+    if (typeof renderSignedPlayersList === 'function') renderSignedPlayersList();
+    if (typeof updateSimEconomySummary === 'function') updateSimEconomySummary();
     closeGlobalSignModal();
 }
+
 
 // Escuchar cambios en el input/select para validar
 document.addEventListener('DOMContentLoaded', () => {

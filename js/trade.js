@@ -1,18 +1,34 @@
-let teamsData = [];
-let playersData = [];
-let draftsData = [];
+/**
+ * trade.js — Simulador de Traspasos (Trade Machine)
+ * ==================================================
+ * Depende de: js/reglas.js (utilidades)
+ * Cargado por: trade.html
+ *
+ * SECCIONES:
+ *  1. Estado global
+ *  2. init() — Carga de CSVs y setup inicial
+ *  3. renderBoard() — Pintado del tablero de traspasos
+ *  4. Handlers de interacción (addTrade, selectTeam, removePick…)
+ *  5. validateTrade() — Validación de reglas NBA
+ *  6. Tooltip de jugador
+ *  7. generateNotification() — Exportar resumen al portapapeles
+ */
+
+// === 1. ESTADO GLOBAL ===
+
+let teamsData    = [];
+let playersData  = [];
+let draftsData   = [];
 let tradeColumns = [];
+
 
 async function init() {
     try {
-        const [playersRes, ecoRes, draftsRes] = await Promise.all([
-            fetch('players.csv'),
-            fetch('economia.csv'),
-            fetch('draft_picks.csv')
+        const [playersText, ecoText, draftsText] = await Promise.all([
+            window.fetchCSV('players.csv'),
+            window.fetchCSV('economia.csv'),
+            window.fetchCSV('draft_picks.csv')
         ]);
-        const playersText = await playersRes.text();
-        const ecoText = await ecoRes.text();
-        const draftsText = await draftsRes.text();
         
         const delimiterEco = ecoText.split('\n')[0].includes(';') ? ';' : ',';
         const delimiterPlayers = playersText.split('\n')[0].includes(';') ? ';' : ',';

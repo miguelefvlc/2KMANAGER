@@ -1,8 +1,9 @@
+
 :root {
-    --bg-color: #0f172a;
+    --bg-color: #121212; 
     --text-color: #f8fafc;
-    --card-bg: rgba(30, 41, 59, 0.7);
-    --card-border: rgba(255, 255, 255, 0.1);
+    --card-bg: rgba(36, 36, 36, 0.7);
+    --card-border: rgba(255, 255, 255, 0.15);
     --accent-1: #3b82f6; /* Blue for Trade */
     --accent-2: #10b981; /* Green for FA */
 }
@@ -36,15 +37,26 @@ body {
 
 h1 {
     font-family: 'Outfit', sans-serif;
-    font-size: 5rem;
+    font-size: 7rem;
     font-weight: 800;
-    letter-spacing: -2px;
+    font-style: italic;
+    letter-spacing: -3px;
     background: linear-gradient(135deg, #fff, #94a3b8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
     text-shadow: 0px 10px 30px rgba(0,0,0,0.5);
+    padding-right: 15px; /* Evita que se corte la última letra por la cursiva */
+}
+
+.red-2k {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+    padding-right: 15px; /* Evita que se corte la K */
+    margin-right: -15px; /* Evita que se separe de OFFICE por el padding */
 }
 
 .subtitle {
@@ -138,6 +150,11 @@ h1 {
 
 .card-equipos:hover {
     box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
+}
+
+.card.dimmed {
+    opacity: 0.5;
+    filter: grayscale(80%);
 }
 
 .card-icon {
