@@ -470,6 +470,13 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
             white-space: nowrap;
             font-size: 12px;
         }
+        
+        /* Disable player tooltips on touch devices (mobile/tablets) */
+        @media (pointer: coarse) {
+            .player-tooltip {
+                display: none !important;
+            }
+        }
         .tooltip-table {
             width: 100%;
             border-collapse: collapse;
@@ -780,27 +787,6 @@ td { padding: 10px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-s
     }
 }
 
-/* ================================================================
-   21. ROTACIÓN FORZADA (Mobile Portrait)
-   ================================================================ */
-
-@media screen and (orientation: portrait) and (max-width: 900px) {
-    html {
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-    }
-    body {
-        transform: rotate(-90deg);
-        transform-origin: left top;
-        width: 100vh;
-        height: 100vw;
-        overflow: auto;
-        position: absolute;
-        top: 100vh;
-        left: 0;
-    }
-}
 
 /* ================================================================
    22. RESPONSIVE

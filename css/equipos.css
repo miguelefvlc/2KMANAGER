@@ -166,12 +166,83 @@
     color: #94a3b8;
 }
 
-@media (max-width: 992px) {
+/* ================================================================
+   MOBILE PORTRAIT (Vertical)
+   ================================================================ */
+@media (max-width: 992px) and (orientation: portrait) {
     .conferences-container {
         flex-direction: column;
     }
+    .header-container h1 {
+        font-size: 2.5rem;
+    }
+    .conference-section {
+        padding: 15px 5px;
+        border-radius: 15px;
+    }
+    .conference-title-img {
+        display: block;
+        margin: 0 auto 15px auto;
+        width: 70px;
+    }
+    .division-title {
+        font-size: 10px;
+        text-align: center;
+        margin-bottom: 5px;
+    }
     .divisions-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+    }
+    .division-col {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .team-card {
+        max-width: 100%;
+        margin: 0;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 5px;
+        gap: 5px;
+    }
+    .team-logo {
+        width: 35px;
+        height: 35px;
     }
 }
+
+/* ================================================================
+   MOBILE LANDSCAPE (Horizontal)
+   ================================================================ */
+@media (max-width: 992px) and (orientation: landscape) {
+    /* Scale down the desktop layout to fit mobile screens */
+    .conferences-container {
+        gap: 10px;
+    }
+    .conference-section {
+        padding: 10px;
+    }
+    .divisions-grid {
+        gap: 5px;
+    }
+    .team-card {
+        padding: 5px;
+        gap: 5px;
+    }
+    .team-logo {
+        width: 30px;
+        height: 30px;
+    }
+    .team-stats {
+        font-size: 0.55rem;
+    }
+    .division-title {
+        font-size: 11px;
+    }
+}
+
+
