@@ -137,6 +137,16 @@ function initApp() {
                 maxSal = maxSal * 0.85;
             }
 
+            const delayList = ["Chet Holmgren", "Jarrett Allen", "Michael Porter Jr.", "Jalen Duren", "DeMar DeRozan", "Walker Kessler", "Mark Williams", "Tim Hardaway Jr.", "Jaxson Hayes"];
+            if (!delayList.includes(p.Player)) {
+                let r = parseInt(calcRound);
+                if (r < 7) {
+                    if (r === 1 || r === 2) { minSal *= 0.85; maxSal *= 0.85; }
+                    else { minSal *= 0.90; maxSal *= 0.90; }
+                    calcRound = (r + 1).toString();
+                }
+            }
+
             return {
                 id: idx + 1,
                 name: p.Player || "Desconocido",
@@ -413,13 +423,11 @@ window.resetSimulation = function() {
     
     // FIRMAS RETRASADAS FIJAS (ya contempladas en el CSV de economía)
     const fixedDelayed = [
-        { name: "Paolo Banchero", team: "New York Knicks" },
         { name: "Chet Holmgren", team: "Detroit Pistons" },
         { name: "Jarrett Allen", team: "Los Angeles Lakers" },
         { name: "Michael Porter Jr.", team: "Atlanta Hawks" },
         { name: "Jalen Duren", team: "Atlanta Hawks" },
         { name: "DeMar DeRozan", team: "Detroit Pistons" },
-        { name: "Shaedon Sharpe", team: "New York Knicks" },
         { name: "Walker Kessler", team: "Orlando Magic" },
         { name: "Mark Williams", team: "Memphis Grizzlies" },
         { name: "Tim Hardaway Jr.", team: "Los Angeles Lakers" },
