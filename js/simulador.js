@@ -50,7 +50,7 @@ function initApp() {
         function mapCsvToTeam(t, idx) {
             const keys = Object.keys(t);
             const nameCol = keys.find(k => k.toLowerCase().includes("team") || k.toLowerCase().includes("equipo")) || keys[0];
-            const lsCol = keys.find(k => k.toLowerCase().includes("límite salarial") || k.toLowerCase().includes("limite salarial") || k.toLowerCase().includes("lmite")) || keys[1]; 
+            const lsCol = keys.find(k => k.toLowerCase().includes("límite salarial") || k.toLowerCase().includes("limite salarial") || k.toLowerCase().includes("Límite")) || keys[1]; 
             const presCol = keys.find(k => k.toLowerCase().includes("presupuesto") && !k.toLowerCase().includes("efectivo")) || keys[2];
             const mleCol = keys.find(k => k.toLowerCase().includes("mle") || k.toLowerCase().includes("mid")) || keys[3];
             const capHoldCol = keys.find(k => k.toLowerCase().includes("caphold") || k.toLowerCase().includes("cap hold") || k.toLowerCase().includes("retenido")) || keys[4];
@@ -137,7 +137,7 @@ function initApp() {
                 maxSal = maxSal * 0.85;
             }
 
-            const delayList = ["Chet Holmgren", "Jarrett Allen", "Michael Porter Jr.", "Jalen Duren", "DeMar DeRozan", "Walker Kessler", "Mark Williams", "Tim Hardaway Jr.", "Jaxson Hayes"];
+            const delayList = ["Jarrett Allen", "Walker Kessler", "Mark Williams", "Tim Hardaway Jr.", "Jaxson Hayes"];
             if (!delayList.includes(p.Player)) {
                 let r = parseInt(calcRound);
                 if (r < 7) {
@@ -423,11 +423,7 @@ window.resetSimulation = function() {
     
     // FIRMAS RETRASADAS FIJAS (ya contempladas en el CSV de economía)
     const fixedDelayed = [
-        { name: "Chet Holmgren", team: "Detroit Pistons" },
         { name: "Jarrett Allen", team: "Los Angeles Lakers" },
-        { name: "Michael Porter Jr.", team: "Atlanta Hawks" },
-        { name: "Jalen Duren", team: "Atlanta Hawks" },
-        { name: "DeMar DeRozan", team: "Detroit Pistons" },
         { name: "Walker Kessler", team: "Orlando Magic" },
         { name: "Mark Williams", team: "Memphis Grizzlies" },
         { name: "Tim Hardaway Jr.", team: "Los Angeles Lakers" },
