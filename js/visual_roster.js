@@ -51,14 +51,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const teamPlayers = await CSVService.getPlayersByTeam(targetTeamName);
 
-        // Sort by Rating (descending)
+        // Load saved order
+        const savedOrder = StorageService.getItem(`roster_order_${targetTeamName}`, []);
+
+        // Sort by saved order first, then by Rating (descending)
         teamPlayers.sort((a, b) => {
+            const nameA = a.Player || "";
+            const nameB = b.Player || "";
+            const indexA = savedOrder.indexOf(nameA);
+            const indexB = savedOrder.indexOf(nameB);
+
+            if (indexA !== -1 && indexB !== -1) {
+                return indexA - indexB;
+            } else if (indexA !== -1) {
+                return -1;
+            } else if (indexB !== -1) {
+                return 1;
+            }
+            
             return (parseInt(b.Rating) || 0) - (parseInt(a.Rating) || 0);
         });
 
         // Render
         const grid = document.getElementById('vr-grid');
         grid.innerHTML = '';
+        
+        let dragSrcEl = null;
 
         if (teamPlayers.length === 0) {
             grid.innerHTML = '<p style="color: #94a3b8; text-align: center; width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">No hay jugadores asignados a este equipo.</p>';
@@ -83,10 +101,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         
                 const card = document.createElement('div');
                 card.className = 'vr-card';
-                card.style.cursor = 'pointer';
+                card.draggable = true;
+                card.dataset.playerName = name;
                 if (savedStatus) {
                     card.setAttribute('data-trade', savedStatus);
                 }
+
+                // SortableJS se encarga ahora del Drag & Drop fluido
 
                 const photoSrc = getPlayerPhotoPath(name);
 
@@ -99,20 +120,36 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <h3 class="vr-name">${name}</h3>
                         <div class="vr-meta">
                             <span>${pos}</span>
-                            <span>${age} AÃ‘OS</span>
+                            <span>${age} AÑOS</span>
                         </div>
                     </div>
                 `;
 
-                card.addEventListener('click', () => {
-                    selectedPlayerCard = card;
-                    selectedPlayerName = name;
-                    document.getElementById('modal-player-name').textContent = name;
-                    document.getElementById('trade-modal').style.display = 'flex';
+                card.addEventListener('click', (e) => {
+                    // Evitar que el drag dispare el modal de traspaso
+                    if (e.target.closest('.vr-card') && !card.classList.contains('dragging')) {
+                        selectedPlayerCard = card;
+                        selectedPlayerName = name;
+                        document.getElementById('modal-player-name').textContent = name;
+                        document.getElementById('trade-modal').style.display = 'flex';
+                    }
                 });
 
                 grid.appendChild(card);
             });
+
+            // Iniciar SortableJS para animaciones fluidas
+            if (typeof Sortable !== 'undefined') {
+                new Sortable(grid, {
+                    animation: 250,
+                    easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    ghostClass: "dragging",
+                    onEnd: function (evt) {
+                        const newOrder = Array.from(grid.children).map(c => c.dataset.playerName);
+                        StorageService.setItem(`roster_order_${targetTeamName}`, newOrder);
+                    }
+                });
+            }
 
             // Modal listeners
             const modal = document.getElementById('trade-modal');
