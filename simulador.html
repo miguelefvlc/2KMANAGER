@@ -7,7 +7,7 @@
     <!-- Fuentes: Inter para UI limpia, JetBrains Mono para datos numéricos -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <!-- PapaParse para leer CSV locales -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js?v=8"     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js?v=9"      ></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -244,11 +244,12 @@
         </div>
     </div>
 
-    <!-- Scripts (orden de carga: constants → reglas → simulador_ui → simulador) -->
-    <script src="js/shared/constants.js?v=8"     ></script>
-    <script src="js/reglas.js?v=8"     ></script>
-    <script src="js/simulador_ui.js?v=8"     ></script>
-    <script src="js/simulador.js?v=8"     ></script>
+    <!-- Scripts (orden de carga: constants → reglas → engine → simulador_ui → simulador) -->
+    <script src="js/shared/constants.js?v=10"   ></script>
+    <script src="js/reglas.js?v=10"             ></script>
+    <script src="js/shared/engine.js?v=10"      ></script>
+    <script src="js/simulador_ui.js?v=10"       ></script>
+    <script src="js/simulador.js?v=10"          ></script>
 </body>
 </html>
 
