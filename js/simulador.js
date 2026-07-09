@@ -137,7 +137,7 @@ function initApp() {
                 maxSal = maxSal * 0.85;
             }
 
-            const delayList = ["Jarrett Allen", "Walker Kessler", "Mark Williams", "Tim Hardaway Jr.", "Jaxson Hayes"];
+            const delayList = ["Jarrett Allen", "Mark Williams", "Tim Hardaway Jr.", "Jaxson Hayes"];
             if (!delayList.includes(p.Player)) {
                 let r = parseInt(calcRound);
                 if (r < 7) {
@@ -424,7 +424,6 @@ window.resetSimulation = function() {
     // FIRMAS RETRASADAS FIJAS (ya contempladas en el CSV de economía)
     const fixedDelayed = [
         { name: "Jarrett Allen", team: "Los Angeles Lakers" },
-        { name: "Walker Kessler", team: "Orlando Magic" },
         { name: "Mark Williams", team: "Memphis Grizzlies" },
         { name: "Tim Hardaway Jr.", team: "Los Angeles Lakers" },
         { name: "Jaxson Hayes", team: "Los Angeles Lakers" }
