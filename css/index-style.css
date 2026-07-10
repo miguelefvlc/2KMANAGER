@@ -225,8 +225,8 @@ h1 {
 @media (max-width: 768px) {
     .header-container {
         width: 100%;
-        margin-bottom: 2rem;
-        margin-top: 2rem;
+        margin-bottom: 3.5rem;
+        margin-top: -3rem;
     }
     h1 {
         font-size: 3rem;
