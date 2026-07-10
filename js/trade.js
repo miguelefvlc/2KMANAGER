@@ -1,7 +1,9 @@
 /**
  * trade.js — Simulador de Traspasos (Trade Machine)
  * ==================================================
- * Depende de: js/reglas.js (utilidades)
+ * Depende de los módulos compartidos:
+ *   - js/shared/csv_service.js
+ *   - js/shared/utils.js
  * Cargado por: trade.html
  *
  * SECCIONES:
@@ -13,28 +15,21 @@
  *  6. Tooltip de jugador
  *  7. generateNotification() — Exportar resumen al portapapeles
  */
-
-// === 1. ESTADO GLOBAL ===
+import { CSVService } from './shared/csv_service.js';
+import { calculateAge, parseCurrency, formatCurrency, getPlayerPhotoPath, generate2kRatingUrl, formatCurrencyOpt } from './shared/utils.js';
 
 let teamsData    = [];
 let playersData  = [];
 let draftsData   = [];
 let tradeColumns = [];
 
-
 async function init() {
     try {
-        const [playersText, ecoText, draftsText] = await Promise.all([
-            window.fetchCSV('players.csv'),
-            window.fetchCSV('economia.csv'),
-            window.fetchCSV('draft_picks.csv')
+        const [parsedPlayers, parsedEco, parsedDrafts] = await Promise.all([
+            CSVService.getPlayers(),
+            CSVService.getEconomy(),
+            CSVService.getDraftPicks()
         ]);
-        
-        const delimiterEco = ecoText.split('\n')[0].includes(';') ? ';' : ',';
-        const delimiterPlayers = playersText.split('\n')[0].includes(';') ? ';' : ',';
-        const delimiterDrafts = draftsText.split('\n')[0].includes(';') ? ';' : ',';
-        
-        const parsedEco = Papa.parse(ecoText, { header: true, skipEmptyLines: true, delimiter: delimiterEco }).data;
         
         parsedEco.forEach((teamRow, idx) => {
             let teamName = teamRow["Equipo"] || teamRow["Team"] || "Equipo " + (idx+1);
@@ -48,7 +43,6 @@ async function init() {
             });
         });
 
-        const parsedPlayers = Papa.parse(playersText, { header: true, skipEmptyLines: true, delimiter: delimiterPlayers }).data;
         parsedPlayers.forEach((p, idx) => {
             const t1Val = parseFloat(p.t1);
             if (isNaN(t1Val) || t1Val <= 0) return; // Filtrar FAs y jugadores con t1 vacío/0
@@ -73,7 +67,6 @@ async function init() {
             });
         });
 
-        const parsedDrafts = Papa.parse(draftsText, { header: true, skipEmptyLines: true, delimiter: delimiterDrafts }).data;
         parsedDrafts.forEach((d, idx) => {
             const tName = (d["Equipo"] || "").toLowerCase().replace(/['"]/g, '').trim();
             const team = teamsData.find(t => t.name.toLowerCase().trim() === tName);

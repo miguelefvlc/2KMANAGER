@@ -1,37 +1,34 @@
 /**
  * simulador.js — Lógica del Simulador Global (simulador.html)
  * ============================================================
- * Depende de (en orden de carga):
- *   1. js/shared/constants.js  → TEAM_LOGOS, CSV_URLS, FIXED_DELAYED_SIM, etc.
- *   2. js/reglas.js            → parseCurrency, formatCurrency, calculateAge, etc.
- *   3. js/shared/engine.js     → mapCsvToTeam, mapCsvToPlayer, renderTopTeamsBar, etc.
- *   4. js/simulador_ui.js      → scanThreatsLogic, openRivalModal, etc.
+ * Depende de los módulos compartidos:
+ *   - js/shared/constants.js
+ *   - js/shared/csv_service.js
+ *   - js/shared/engine.js
+ *   - js/shared/utils.js
+ *   - js/simulador_ui.js (importado vía HTML para interacciones UI)
  *
- * Este archivo contiene SOLO la lógica exclusiva del Simulador Global:
- *   - Estado global de la página
- *   - initApp() con carga de CSVs
- *   - recalculateCapHolds() (modo global — aplica a todos los equipos)
- *   - resetSimulation() con FIXED_DELAYED_SIM
- *   - renderStudyTable() con columnas del Simulador (logos Aspirantes, Ronda)
- *   - selectStudyPlayer()
- *   - Simulador de firmas para cualquier equipo (modal global)
- *   - Hoja de Ruta (registro de firmas multi-equipo)
- *   - Selector de Ronda
+ * Este archivo contiene SOLO la lógica exclusiva del Simulador Global.
  */
+
+import { CSV_URLS, FA_TEAM_ID, FREESPOT_BONUS, ROSTER_THRESHOLD, ROSTER_FULL, FIXED_DELAYED_SIM, RANGE_R3_START, RANGE_R3_END, DEFAULT_TEAM, TEAM_LOGOS, TEAM_ABBR, STAR_PATH_FILLED, STAR_PATH_EMPTY } from './shared/constants.js';
+import { CSVService } from './shared/csv_service.js';
+import { mapCsvToTeam, mapCsvToPlayer, renderLogoGrid, updateActiveTeamUI, initPlayerSearch, renderTopTeamsBar, renderTopEconomy, selectTeamByLogo } from './shared/engine.js';
+import { parseCurrency, calculateAge, formatCurrency, getColorClass, getPlayerPhotoPath } from './shared/utils.js';
 
 // === ESTADO GLOBAL DEL SIMULADOR ===
 
-let dbEquipos_Base = [];
-let dbJugadores_Base = [];
+window.dbEquipos_Base = [];
+window.dbJugadores_Base = [];
 
-let allTeams    = [];
-let livePlayers = [];
-let activeTeam  = null;
-let activePlayerId = null;
+window.allTeams    = [];
+window.livePlayers = [];
+window.activeTeam  = null;
+window.activePlayerId = null;
 
-let isGlobalSimOpen         = false;
-let globalSimActivePlayerId = null;
-let globalSimActiveTeamName = null;
+window.isGlobalSimOpen         = false;
+window.globalSimActivePlayerId = null;
+window.globalSimActiveTeamName = null;
 
 // === ARRANQUE ===
 
@@ -46,18 +43,12 @@ function initApp() {
     if (loader) loader.style.display = 'flex';
 
     Promise.all([
-        window.fetchCSV(CSV_URLS.players),
-        window.fetchCSV(CSV_URLS.economia)
-    ]).then(([csvPlayers, csvEconomy]) => {
-
-        const delimiterPlayers = csvPlayers.split('\n')[0].includes(';') ? ';' : ',';
-        const delimiterEconomy = csvEconomy.split('\n')[0].includes(';') ? ';' : ',';
-
-        const rawPlayers = Papa.parse(csvPlayers, { header: true, skipEmptyLines: true, delimiter: delimiterPlayers }).data;
-        const rawTeams   = Papa.parse(csvEconomy,  { header: true, skipEmptyLines: true, delimiter: delimiterEconomy }).data;
+        CSVService.getPlayers(),
+        CSVService.getEconomy()
+    ]).then(([rawPlayers, rawTeams]) => {
 
         // --- Equipos ---
-        dbEquipos_Base = rawTeams.map(mapCsvToTeam).filter(t => t.name !== 'Desconocido');
+        window.dbEquipos_Base = rawTeams.map(mapCsvToTeam).filter(t => t.name !== 'Desconocido');
 
         const rostersCount = {};
         rawPlayers.forEach(p => {
@@ -66,19 +57,19 @@ function initApp() {
                 rostersCount[p.team_id] = (rostersCount[p.team_id] || 0) + 1;
             }
         });
-        dbEquipos_Base.forEach(t => { t.numPlayers = rostersCount[t.id] || 0; });
+        window.dbEquipos_Base.forEach(t => { t.numPlayers = rostersCount[t.id] || 0; });
 
         // --- Jugadores FA ---
         const startR3Idx = rawPlayers.findIndex(x => x.Player === RANGE_R3_START);
         const endR3Idx   = rawPlayers.findIndex(x => x.Player === RANGE_R3_END);
 
-        dbJugadores_Base = rawPlayers
+        window.dbJugadores_Base = rawPlayers
             .filter(p => (parseFloat(p.t1) || 0) === 0 || p.team_id === FA_TEAM_ID)
-            .map((p, idx) => mapCsvToPlayer(p, idx, dbEquipos_Base, rawPlayers, startR3Idx, endR3Idx))
+            .map((p, idx) => mapCsvToPlayer(p, idx, window.dbEquipos_Base, rawPlayers, startR3Idx, endR3Idx))
             .filter(p => p.name !== 'Desconocido');
 
-        activeTeam = structuredClone(
-            dbEquipos_Base.find(t => t.name === DEFAULT_TEAM) || dbEquipos_Base[0]
+        window.activeTeam = structuredClone(
+            window.dbEquipos_Base.find(t => t.name === DEFAULT_TEAM) || window.dbEquipos_Base[0]
         );
 
         renderLogoGrid();
@@ -203,18 +194,18 @@ window.recalculateCapHolds = function() {
 window.resetSimulation = function() {
     if (!activeTeam) return;
 
-    allTeams    = structuredClone(dbEquipos_Base);
-    livePlayers = structuredClone(dbJugadores_Base);
+    window.allTeams    = structuredClone(window.dbEquipos_Base);
+    window.livePlayers = structuredClone(window.dbJugadores_Base);
 
     FIXED_DELAYED_SIM.forEach(fd => {
-        const p = livePlayers.find(pl => pl.name === fd.name && pl.originTeam === fd.team);
+        const p = window.livePlayers.find(pl => pl.name === fd.name && pl.originTeam === fd.team);
         if (p) {
             p.simulatedSigned = true;
             p.simTx = { salary: p.capHold, exception: 'bird', isDelayed: true, isPreloaded: true, team: fd.team };
         }
     });
 
-    activePlayerId = null;
+    window.activePlayerId = null;
     const tName = document.getElementById('player-target-name');
     if (tName) tName.innerText = 'Selecciona un objetivo...';
     const tBox  = document.getElementById('threats-box');

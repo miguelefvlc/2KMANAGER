@@ -1,12 +1,10 @@
-function getPlayerPhotoPath(playerName) {
-    if (!playerName) return '';
-    let slug = playerName.toLowerCase();
-    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    slug = slug.replace(/['\.]/g, "");
-    slug = slug.replace(/[^a-z0-9]+/g, "-");
-    slug = slug.replace(/^-+|-+$/g, "");
-    return `photos/${slug}.png`;
-}
+import { CSVService } from './shared/csv_service.js';
+import { StorageService } from './shared/storage_service.js';
+import { TEAM_LOGOS } from './shared/constants.js';
+import { getPlayerPhotoPath } from './shared/utils.js';
+
+let selectedPlayerCard = null;
+let selectedPlayerName = "";
 
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);

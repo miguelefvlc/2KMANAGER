@@ -1,28 +1,28 @@
-/**
- * constants.js — Fuente única de verdad para constantes globales
+﻿/**
+ * constants.js â€” Fuente Ãºnica de verdad para constantes globales
  * =============================================================
- * Cargado antes que cualquier script de página.
+ * Cargado antes que cualquier script de pÃ¡gina.
  * Si necesitas cambiar un nombre de equipo, ruta de logo o ruta de CSV,
- * este es el único archivo que debes tocar.
+ * este es el Ãºnico archivo que debes tocar.
  */
 
 // -----------------------------------------------------------------
 // RUTAS A LOS ARCHIVOS DE DATOS
 // -----------------------------------------------------------------
-const CSV_URLS = {
+export const CSV_URLS = {
     players:  'players.csv',
     economia: 'economia.csv',
     draft:    'draft_picks.csv'
 };
 
 // ID especial que identifica a los Agentes Libres en players.csv
-const FA_TEAM_ID = '31';
+export const FA_TEAM_ID = '31';
 
 // -----------------------------------------------------------------
 // LOGOS DE EQUIPOS
-// Mapa: Nombre oficial del equipo → archivo de imagen (en /logos/)
+// Mapa: Nombre oficial del equipo â†’ archivo de imagen (en /logos/)
 // -----------------------------------------------------------------
-const TEAM_LOGOS = {
+export const TEAM_LOGOS = {
     "Atlanta Hawks":           "imgi_287_atl.png",
     "Boston Celtics":          "imgi_267_bos.png",
     "Brooklyn Nets":           "imgi_268_bkn.png",
@@ -58,7 +58,7 @@ const TEAM_LOGOS = {
 // -----------------------------------------------------------------
 // ABREVIATURAS DE EQUIPOS
 // -----------------------------------------------------------------
-const TEAM_ABBR = {
+export const TEAM_ABBR = {
     "Atlanta Hawks":           "ATL",
     "Boston Celtics":          "BOS",
     "Brooklyn Nets":           "BKN",
@@ -92,62 +92,62 @@ const TEAM_ABBR = {
 };
 
 // -----------------------------------------------------------------
-// REGLAS DE ECONOMÍA
-// Modificar aquí si cambian las reglas de liga.
+// REGLAS DE ECONOMÃA
+// Modificar aquÃ­ si cambian las reglas de liga.
 // -----------------------------------------------------------------
 
-/** Número máximo de jugadores para calcular plazas libres (freespot) */
-const ROSTER_THRESHOLD = 14;
+/** NÃºmero mÃ¡ximo de jugadores para calcular plazas libres (freespot) */
+export const ROSTER_THRESHOLD = 14;
 
-/** Número de jugadores que marca el roster lleno (no se puede fichar sin Bird/R) */
-const ROSTER_FULL = 15;
+/** NÃºmero de jugadores que marca el roster lleno (no se puede fichar sin Bird/R) */
+export const ROSTER_FULL = 15;
 
-/** Bonus económico ($) por cada plaza libre de roster que se ocupa al firmar */
-const FREESPOT_BONUS = 1_800_000;
+/** Bonus econÃ³mico ($) por cada plaza libre de roster que se ocupa al firmar */
+export const FREESPOT_BONUS = 1_800_000;
 
-/** Equipo que se preselecciona al arrancar la aplicación */
-const DEFAULT_TEAM = 'Orlando Magic';
+/** Equipo que se preselecciona al arrancar la aplicaciÃ³n */
+export const DEFAULT_TEAM = 'Orlando Magic';
 
 // -----------------------------------------------------------------
 // REGLAS DE RONDA DE AGENCIA LIBRE
-// Controla cómo se asigna la ronda de mercado a cada FA según su Rating.
+// Controla cÃ³mo se asigna la ronda de mercado a cada FA segÃºn su Rating.
 // -----------------------------------------------------------------
 
 /** Umbrales de Rating para asignar ronda inicial */
-const ROUND_THRESHOLDS = { R1: 85, R2: 82, R3: 80, R4: 75 };
+export const ROUND_THRESHOLDS = { R1: 85, R2: 82, R3: 80, R4: 75 };
 
 /**
  * Rango de posiciones en el CSV rawPlayers que fuerza la Ronda 3
  * independientemente del Rating. Marca el inicio y fin del rango.
  */
-const RANGE_R3_START = 'C.J. McCollum';
-const RANGE_R3_END   = 'Tari Eason';
+export const RANGE_R3_START = 'C.J. McCollum';
+export const RANGE_R3_END   = 'Tari Eason';
 
 /** Jugadores dentro del rango R3 que quedan exentos de la forzado a Ronda 3 */
-const RANGE_R3_EXCEPTIONS = ['Shaedon Sharpe', 'Walker Kessler'];
+export const RANGE_R3_EXCEPTIONS = ['Shaedon Sharpe', 'Walker Kessler'];
 
 /** Jugadores con descuento manual adicional sobre su salario base */
-const PLAYER_EXTRA_DISCOUNTS = [
+export const PLAYER_EXTRA_DISCOUNTS = [
     { name: 'C.J. McCollum', multiplier: 0.85 },
     { name: 'Ty Jerome',     multiplier: 0.85 },
 ];
 
-/** Jugadores que se quedan en Ronda 4 (no bajan automáticamente a R5) */
-const FIXED_ROUND4_PLAYERS = ['Tim Hardaway Jr.', 'Jaxson Hayes'];
+/** Jugadores que se quedan en Ronda 4 (no bajan automÃ¡ticamente a R5) */
+export const FIXED_ROUND4_PLAYERS = ['Tim Hardaway Jr.', 'Jaxson Hayes'];
 
 /**
- * Jugadores excluidos del degradado automático de ronda al siguiente nivel.
+ * Jugadores excluidos del degradado automÃ¡tico de ronda al siguiente nivel.
  * Estos tienen contratos retrasados fijos que los salvan del decay normal.
  */
-const DELAY_LIST = ['Jarrett Allen', 'Mark Williams', 'Tim Hardaway Jr.', 'Jaxson Hayes'];
+export const DELAY_LIST = ['Jarrett Allen', 'Mark Williams', 'Tim Hardaway Jr.', 'Jaxson Hayes'];
 
 // -----------------------------------------------------------------
 // FIRMAS RETRASADAS PRECONFIGURADAS
-// Están calculadas en el CSV de economía; solo se reflejan en la UI.
+// EstÃ¡n calculadas en el CSV de economÃ­a; solo se reflejan en la UI.
 // -----------------------------------------------------------------
 
 /** Firmas retrasadas para FA Office (fa.html) */
-const FIXED_DELAYED_FA = [
+export const FIXED_DELAYED_FA = [
     { name: 'Paolo Banchero',     team: 'New York Knicks'    },
     { name: 'Chet Holmgren',      team: 'Detroit Pistons'    },
     { name: 'Jarrett Allen',      team: 'Los Angeles Lakers' },
@@ -160,7 +160,7 @@ const FIXED_DELAYED_FA = [
 ];
 
 /** Firmas retrasadas para el Simulador Global (simulador.html) */
-const FIXED_DELAYED_SIM = [
+export const FIXED_DELAYED_SIM = [
     { name: 'Jarrett Allen',     team: 'Los Angeles Lakers' },
     { name: 'Mark Williams',     team: 'Memphis Grizzlies'  },
     { name: 'Tim Hardaway Jr.',  team: 'Los Angeles Lakers' },
@@ -172,7 +172,7 @@ const FIXED_DELAYED_SIM = [
 // -----------------------------------------------------------------
 
 /** SVG path del icono de estrella relleno (jugador favorito) */
-const STAR_PATH_FILLED = 'M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.692c.197-.39.73-.39.927 0l2.184 4.427 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z';
+export const STAR_PATH_FILLED = 'M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.692c.197-.39.73-.39.927 0l2.184 4.427 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z';
 
-/** SVG path del icono de estrella vacío (jugador no favorito) */
-const STAR_PATH_EMPTY  = 'M2.866 14.85c-.078.444.368.791.746.593l4.39-2.256 4.389 2.256c.377.197.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z';
+/** SVG path del icono de estrella vacÃ­o (jugador no favorito) */
+export const STAR_PATH_EMPTY  = 'M2.866 14.85c-.078.444.368.791.746.593l4.39-2.256 4.389 2.256c.377.197.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z';

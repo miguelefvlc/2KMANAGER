@@ -1,4 +1,4 @@
-const StorageService = {
+export const StorageService = {
     PREFIX: '2kprims_',
 
     _getKey(key) {

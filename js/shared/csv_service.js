@@ -1,4 +1,6 @@
-const CSVService = {
+import { CSV_URLS } from './constants.js';
+
+export const CSVService = {
     _caches: {},
     _promises: {},
 

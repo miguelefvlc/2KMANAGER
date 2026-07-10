@@ -323,29 +323,34 @@
 /* Responsive (Mobile) */
 @media (max-width: 768px) {
     .vr-grid {
-        gap: 6px;
+        gap: 4px;
+        padding: 0 5px;
     }
     .vr-card {
-        width: calc(25% - 6px); /* 4 cards por fila */
-        min-width: 75px; /* Permite reducir mucho más el tamaño */
+        width: calc(20% - 4px); /* 5 cards por fila en vertical */
+        min-width: 55px; 
+        padding-top: 8px;
+    }
+    .vr-info {
+        padding: 6px 2px;
     }
     .vr-name {
-        font-size: 0.65rem;
+        font-size: 0.55rem;
         margin-bottom: 2px;
     }
     .vr-meta {
-        font-size: 0.5rem;
-        gap: 3px;
+        font-size: 0.45rem;
+        gap: 2px;
         flex-direction: column;
     }
     .vr-meta span {
-        padding: 1px 3px;
+        padding: 1px 2px;
     }
     .vr-rating {
-        font-size: 0.7rem;
-        padding: 1px 4px;
-        top: 4px;
-        right: 4px;
+        font-size: 0.65rem;
+        padding: 2px 4px;
+        top: 0px;
+        left: 0px;
     }
     #vr-team-name {
         font-size: 1.8rem;
@@ -353,15 +358,19 @@
     .vr-team-logo {
         width: 60px;
     }
+    .vr-legend {
+        margin-top: 30px;
+        font-size: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
     .vr-card {
-        width: calc(25% - 6px); 
-        min-width: 65px;
+        width: calc(20% - 4px); 
+        min-width: 50px;
     }
     .vr-name {
-        font-size: 0.55rem;
+        font-size: 0.5rem;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

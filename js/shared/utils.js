@@ -1,9 +1,9 @@
 /**
- * Motor Financiero Aislado (Reglas de Negocio)
- * Funciones puras para los cálculos de la Agencia Libre.
+ * utils.js - Funciones de utilidad compartidas
+ * ============================================
  */
 
-window.fetchCSV = async function(url) {
+export async function fetchCSV(url) {
     const res = await fetch(url, { cache: 'no-store' });
     const buffer = await res.arrayBuffer();
     try {
@@ -13,9 +13,9 @@ window.fetchCSV = async function(url) {
         const ansiDecoder = new TextDecoder('windows-1252');
         return ansiDecoder.decode(buffer);
     }
-};
+}
 
-function parseCurrency(str) {
+export function parseCurrency(str) {
     if(!str) return 0;
     let s = str.toString();
     
@@ -39,20 +39,20 @@ function parseCurrency(str) {
     return parseFloat(val) || 0;
 }
 
-function formatCurrency(num) {
+export function formatCurrency(num) {
     if (isNaN(num)) return "$0";
     let isNeg = num < 0;
     let absNum = Math.abs(num);
     return (isNeg ? "-$" : "$") + absNum.toLocaleString('en-US');
 }
 
-function formatCurrencyOpt(val) {
+export function formatCurrencyOpt(val) {
     let num = parseFloat(val);
     if (!num || isNaN(num) || num === 0) return '-';
     return "$" + num.toLocaleString('en-US');
 }
 
-function calculateRoundModifier(salary, round) {
+export function calculateRoundModifier(salary, round) {
     let mod = 1.0;
     if (round >= 2) mod *= 0.85; 
     if (round >= 3) mod *= 0.85; 
@@ -63,7 +63,8 @@ function calculateRoundModifier(salary, round) {
     return Math.round(salary * mod);
 }
 
-function getPlayerPhotoPath(playerName) {
+export function getPlayerPhotoPath(playerName) {
+    if (!playerName) return '';
     let slug = playerName.toLowerCase();
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     slug = slug.replace(/['\.]/g, "");
@@ -72,7 +73,7 @@ function getPlayerPhotoPath(playerName) {
     return `photos/${slug}.png`;
 }
 
-function calculateAge(birthdateStr) {
+export function calculateAge(birthdateStr) {
     if (!birthdateStr || birthdateStr.trim() === '') return '-';
     const parts = birthdateStr.split(/[-/]/);
     if (parts.length !== 3) return '-';
@@ -97,25 +98,21 @@ function calculateAge(birthdateStr) {
     return age;
 }
 
-function generate2kRatingUrl(playerName) {
+export function generate2kRatingUrl(playerName) {
+    if (!playerName) return '#';
     let slug = playerName.toLowerCase();
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    slug = slug.replace(/['.]/g, "");
+    slug = slug.replace(/['\.]/g, "");
     slug = slug.replace(/[^a-z0-9]+/g, "-");
     slug = slug.replace(/^-+|-+$/g, '');
     return `https://www.2kratings.com/${slug}`;
 }
 
-/**
- * Devuelve la clase CSS de color (rojo/verde) según si el valor es negativo o positivo.
- * @param {number} val
- * @returns {string}
- */
-function getColorClass(val) {
+export function getColorClass(val) {
     return val < 0 ? 'color-red' : 'color-green';
 }
 
-function getOptClass(opt) {
+export function getOptClass(opt) {
     if (!opt) return "";
     opt = opt.toUpperCase();
     if (opt.includes('TO') || opt === 'T') return "opt-to";

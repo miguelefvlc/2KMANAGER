@@ -1,7 +1,5 @@
-/**
- * Motor de Renderizado UI (HTML Builders)
- * Aquí van todas las funciones que inyectan HTML en la interfaz.
- */
+import { TEAM_LOGOS, STAR_PATH_FILLED, STAR_PATH_EMPTY } from './shared/constants.js';
+import { formatCurrency, getPlayerPhotoPath, getColorClass, parseCurrency } from './shared/utils.js';
 
 window.scanThreatsLogic = function(player, allTeams, activeTeamName) {
     let threatsCount = 0;

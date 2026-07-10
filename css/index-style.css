@@ -225,74 +225,102 @@ h1 {
 @media (max-width: 768px) {
     body {
         justify-content: flex-start;
-        padding-top: 12vh; /* Ajusta el espacio por arriba sin centrar forzosamente */
+        padding-top: 8vh; /* Menos espacio por arriba para subir el título */
     }
     .header-container {
         width: 100%;
-        margin-bottom: 3rem;
+        margin-bottom: 4rem; /* Más separación entre el título y las celdas */
         margin-top: 0;
     }
     h1 {
         font-size: 3rem;
-        margin-bottom: 0.8rem; /* Separar título de subtítulo */
+        margin-bottom: 1rem; /* Separar título de subtítulo */
         width: 100%;
         text-align: center;
+        padding-right: 0;
+    }
+    .red-2k {
+        padding-right: 0;
+        margin-right: 0;
     }
     .subtitle {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
     .cards-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: 1fr;
         gap: 0.5rem;
         padding: 0 0.5rem;
         margin-bottom: 2rem;
     }
     .card {
-        padding: 1.5rem 0.5rem;
-        height: 100%;
+        padding: 1rem 0.2rem;
+        height: auto;
+        min-height: 120px;
     }
     .card-title {
-        font-size: 0.8rem;
+        font-size: 0.65rem; /* Más pequeño para que quepan */
         letter-spacing: 0;
         line-height: 1.2;
+        word-break: break-word; /* Evita que se salgan los textos largos */
     }
     .card-desc {
-        font-size: 0.65rem;
-        line-height: 1.2;
-        margin-top: 0.5rem;
         display: none;
     }
     .card-icon {
-        height: 2.5rem;
+        height: 2rem;
         margin-bottom: 0.5rem;
     }
     .card-icon svg {
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2rem;
+        height: 2rem;
     }
 }
 
-/* Landscape / Pantallas con poca altura */
-@media (max-height: 600px) {
+/* Landscape / Pantallas con poca altura (horizontal en móvil) */
+@media (max-height: 600px) and (orientation: landscape) {
     body {
         justify-content: flex-start;
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        height: auto;
+        min-height: 100vh;
     }
     .header-container {
         margin-top: 0;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
     h1 {
-        font-size: 4rem;
-        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        margin-bottom: 0.2rem;
+    }
+    .subtitle {
+        font-size: 0.8rem;
     }
     .cards-container {
-        padding: 0 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+        padding: 0 1rem;
     }
     .card {
-        padding: 2rem 1rem;
+        padding: 1rem;
+        min-width: 150px;
+        flex: 1 1 200px;
+    }
+    .card-title {
+        font-size: 1rem;
+    }
+    .card-icon {
+        height: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    .card-icon svg {
+        width: 2rem;
+        height: 2rem;
+    }
+    .card-desc {
+        display: none;
     }
 }

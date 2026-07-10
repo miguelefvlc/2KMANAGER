@@ -224,11 +224,12 @@
         </div>
     </div>
 
-    <!-- Scripts (orden de carga: constants → reglas → engine → ui → app) -->
-    <script src="js/shared/constants.js?v=10"   ></script>
-    <script src="js/reglas.js?v=10"             ></script>
-    <script src="js/shared/engine.js?v=10"      ></script>
-    <script src="js/ui.js?v=10"                 ></script>
-    <script src="js/app.js?v=10"                ></script>
+    <!-- Librería externa para CSV (debe cargar síncrona primero) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <!-- App Scripts -->
+    <script type="module" src="js/shared/engine.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

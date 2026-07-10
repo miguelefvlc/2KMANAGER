@@ -1,4 +1,8 @@
-﻿document.addEventListener("DOMContentLoaded", async () => {
+import { CSVService } from './shared/csv_service.js';
+import { TEAM_LOGOS } from './shared/constants.js';
+import { calculateAge } from './shared/utils.js';
+
+document.addEventListener("DOMContentLoaded", async () => {
     try {
         const [parsedPlayers, parsedEco, parsedDraft] = await Promise.all([
             CSVService.getPlayers(),
@@ -66,16 +70,12 @@
 
                 teamData.players.forEach(p => {
                     // Age
-                    let age = parseInt(p.Age);
-                    if(p.FechaNacimiento) {
-                        const bday = new Date(p.FechaNacimiento);
-                        if(!isNaN(bday)) {
-                            const ageDate = new Date(Date.now() - bday.getTime());
-                            age = Math.abs(ageDate.getUTCFullYear() - 1970);
-                        }
-                    }
-                    if(!isNaN(age)) {
-                        totalAge += age;
+                    let age = calculateAge(p.FechaNacimiento);
+                    if (age !== '-') {
+                        totalAge += parseInt(age);
+                        ageCount++;
+                    } else if (!isNaN(parseInt(p.Age))) {
+                        totalAge += parseInt(p.Age);
                         ageCount++;
                     }
 

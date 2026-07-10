@@ -1,18 +1,16 @@
+import { CSVService } from './shared/csv_service.js';
+import { calculateAge, getPlayerPhotoPath, generate2kRatingUrl, getOptClass, formatCurrencyOpt } from './shared/utils.js';
+
 let playersData = [];
 let teamsData = [];
 let currentSort = { column: 'rating', asc: false };
 
 async function init() {
     try {
-        const [playersText, ecoText] = await Promise.all([
-            window.fetchCSV('players.csv'),
-            window.fetchCSV('economia.csv')
+        const [parsedPlayers, parsedEco] = await Promise.all([
+            CSVService.getPlayers(),
+            CSVService.getEconomy()
         ]);
-        
-        const delimiterEco = ecoText.split('\n')[0].includes(';') ? ';' : ',';
-        const delimiterPlayers = playersText.split('\n')[0].includes(';') ? ';' : ',';
-        
-        const parsedEco = Papa.parse(ecoText, { header: true, skipEmptyLines: true, delimiter: delimiterEco }).data;
         
         // Parse teams
         parsedEco.forEach((teamRow, idx) => {
@@ -34,7 +32,6 @@ async function init() {
         });
 
         // Parse players
-        const parsedPlayers = Papa.parse(playersText, { header: true, skipEmptyLines: true, delimiter: delimiterPlayers }).data;
         parsedPlayers.forEach((p, idx) => {
             const isFA = !p.team_id || p.team_id.trim() === '' || p.team_id === '0' || (parseFloat(p.t1) || 0) === 0;
             const teamObj = teamsData.find(t => t.id === p.team_id);

@@ -1,85 +1,7 @@
-const teamLogos = {
-    "Denver Nuggets": "logos/imgi_277_den.png",
-    "Brooklyn Nets": "logos/imgi_268_bkn.png",
-    "New York Knicks": "logos/imgi_269_ny.png",
-    "Philadelphia 76ers": "logos/imgi_270_phi.png",
-    "Toronto Raptors": "logos/imgi_271_tor.png",
-    "Chicago Bulls": "logos/imgi_272_chi.png",
-    "Cleveland Cavaliers": "logos/imgi_273_cle.png",
-    "Detroit Pistons": "logos/imgi_274_det.png",
-    "Indiana Pacers": "logos/imgi_275_ind.png",
-    "Milwaukee Bucks": "logos/imgi_276_mil.png",
-    "Atlanta Hawks": "logos/imgi_287_atl.png",
-    "Charlotte Hornets": "logos/imgi_288_cha.png",
-    "Miami Heat": "logos/imgi_289_mia.png",
-    "Orlando Magic": "logos/imgi_290_orl.png",
-    "Washington Wizards": "logos/imgi_291_wsh.png",
-    "Boston Celtics": "logos/imgi_267_bos.png",
-    "Minnesota Timberwolves": "logos/imgi_278_min.png",
-    "Oklahoma City Thunder": "logos/imgi_279_okc.png",
-    "Portland Trail Blazers": "logos/imgi_280_por.png",
-    "Utah Jazz": "logos/imgi_281_utah.png",
-    "Golden State Warriors": "logos/imgi_282_gs.png",
-    "Los Angeles Clippers": "logos/imgi_283_lac.png",
-    "Los Angeles Lakers": "logos/imgi_284_lal.png",
-    "Phoenix Suns": "logos/imgi_285_phx.png",
-    "Sacramento Kings": "logos/imgi_286_sac.png",
-    "Dallas Mavericks": "logos/imgi_292_dal.png",
-    "Houston Rockets": "logos/imgi_293_hou.png",
-    "Memphis Grizzlies": "logos/imgi_294_mem.png",
-    "New Orleans Pelicans": "logos/imgi_295_no.png",
-    "San Antonio Spurs": "logos/imgi_296_sa.png",
-};
+import { CSVService } from './shared/csv_service.js';
+import { TEAM_LOGOS } from './shared/constants.js';
+import { calculateAge, getPlayerPhotoPath, generate2kRatingUrl, getOptClass, formatCurrencyOpt, formatCurrency, parseCurrency } from './shared/utils.js';
 
-
-// Add utility functions
-function calculateAge(birthday) {
-    if (!birthday) return '-';
-    const ageDifMs = Date.now() - new Date(birthday).getTime();
-    const ageDate = new Date(ageDifMs);
-    return Math.abs(ageDate.getUTCFullYear() - 1970);
-}
-
-function getPlayerPhotoPath(playerName) {
-    if (!playerName) return '';
-    let slug = playerName.toLowerCase();
-    slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    slug = slug.replace(/['\.]/g, "");
-    slug = slug.replace(/[^a-z0-9]+/g, "-");
-    slug = slug.replace(/^-+|-+$/g, "");
-    return `photos/${slug}.png`;
-}
-
-function generate2kRatingUrl(playerName) {
-    if (!playerName) return '#';
-    const formattedName = playerName.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().replace(/\s+/g, '-');
-    return `https://www.2kratings.com/player/${formattedName}`;
-}
-
-function getOptClass(optStr) {
-    if(!optStr) return '';
-    const upper = optStr.toString().toUpperCase();
-    if(upper.includes('PO')) return 'opt-po';
-    if(upper.includes('TO')) return 'opt-to';
-    if(upper.includes('NG')) return 'opt-ng';
-    return '';
-}
-
-function formatCurrencyOpt(val) {
-    if(!val || val === '0') return '-';
-    return formatCurrency(parseCurrencyStr(val));
-}
-
-// Utils
-function formatCurrency(value) {
-    if (!value || isNaN(value)) return "$0";
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
-}
-
-function parseCurrencyStr(val) {
-    if(!val) return 0;
-    return parseFloat(val.toString().replace(/[\$,]/g, '')) || 0;
-}
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. Obtener parÃƒÂ¡metro de URL
@@ -104,11 +26,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Populate Nav Bar
     const navBar = document.getElementById('roster-nav-bar');
     if (navBar) {
-        Object.keys(teamLogos).forEach(team => {
+        Object.keys(TEAM_LOGOS).forEach(team => {
             const a = document.createElement('a');
             a.href = `roster.html?team=${encodeURIComponent(team)}`;
             const img = document.createElement('img');
-            img.src = teamLogos[team];
+            img.src = 'logos/' + TEAM_LOGOS[team];
             img.className = 'roster-nav-logo';
             img.title = team;
             if (team.toLowerCase() === targetTeamName.toLowerCase()) {
@@ -122,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 2. Establecer Cabecera
     document.getElementById('roster-team-name').textContent = targetTeamName.toUpperCase();
-    const logoSrc = teamLogos[targetTeamName] || "";
+    const logoSrc = TEAM_LOGOS[targetTeamName] ? 'logos/' + TEAM_LOGOS[targetTeamName] : "";
     if (logoSrc) {
         document.getElementById('roster-team-logo').src = logoSrc;
     } else {
@@ -173,7 +95,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             keys.forEach(key => {
                 if (teamEconomyData[key] !== undefined) {
-                    const val = parseCurrencyStr(teamEconomyData[key]);
+                    const val = parseCurrency(teamEconomyData[key]);
                     const tr = document.createElement('tr');
                     
                     const tdLabel = document.createElement('td');

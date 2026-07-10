@@ -1,26 +1,7 @@
-/**
- * engine.js — Motor Compartido (FA Office + Simulador Global)
- * ===========================================================
- * Contiene todas las funciones 100% idénticas entre app.js y simulador.js.
- * Depende de: js/shared/constants.js, js/reglas.js
- *
- * Las variables de estado (allTeams, livePlayers, activeTeam, etc.)
- * son declaradas en app.js o simulador.js. Este archivo solo define
- * funciones que operan sobre ellas — no tiene estado propio.
- */
+import { CSV_URLS, FA_TEAM_ID, ROUND_THRESHOLDS, RANGE_R3_START, RANGE_R3_END, RANGE_R3_EXCEPTIONS, PLAYER_EXTRA_DISCOUNTS, FIXED_ROUND4_PLAYERS, DELAY_LIST, ROSTER_FULL, TEAM_LOGOS, STAR_PATH_FILLED, STAR_PATH_EMPTY } from './constants.js';
+import { parseCurrency, calculateAge, formatCurrency, getColorClass } from './utils.js';
 
-// -----------------------------------------------------------------
-// PARSEO DE CSV — FUNCIONES PURAS (sin efectos secundarios)
-// -----------------------------------------------------------------
-
-/**
- * Convierte una fila del CSV de economía en un objeto equipo normalizado.
- * La detección de columnas es flexible ante variaciones de nombre de cabecera.
- * @param {Object} t   - Fila cruda del CSV (Papa.parse header:true)
- * @param {number} idx - Índice de la fila (0-based)
- * @returns {Object}   - Objeto equipo
- */
-function mapCsvToTeam(t, idx) {
+export function mapCsvToTeam(t, idx) {
     const keys = Object.keys(t);
     const nameCol        = keys.find(k => k.toLowerCase().includes('team') || k.toLowerCase().includes('equipo')) || keys[0];
     const lsCol          = keys.find(k => k.toLowerCase().includes('límite salarial') || k.toLowerCase().includes('limite salarial') || k.toLowerCase().includes('lmite')) || keys[1];
@@ -54,7 +35,7 @@ function mapCsvToTeam(t, idx) {
  * @param {number} endR3Idx    - Índice del último jugador del rango forzado R3
  * @returns {Object}            - Objeto jugador con ronda calculada
  */
-function mapCsvToPlayer(p, idx, dbEquipos, rawPlayers, startR3Idx, endR3Idx) {
+export function mapCsvToPlayer(p, idx, dbEquipos, rawPlayers, startR3Idx, endR3Idx) {
     let minSal   = parseCurrency(p['Minimum'] || p['Minimum Sa'] || p['Minimum Salary'] || p.MinimumSalary || '0');
     let maxSal   = parseCurrency(p['Maximum'] || p['Maximum Sa'] || p['Maximum Salary'] || p.MaximumSalary || '0');
     const capHold = parseCurrency(p['caphold'] || p['Cap Hold'] || p.CapHold || '0');
