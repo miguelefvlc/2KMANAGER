@@ -223,14 +223,18 @@ h1 {
 }
 
 @media (max-width: 768px) {
+    body {
+        justify-content: flex-start;
+        padding-top: 12vh; /* Ajusta el espacio por arriba sin centrar forzosamente */
+    }
     .header-container {
         width: 100%;
-        margin-bottom: 3.5rem;
-        margin-top: -3rem;
+        margin-bottom: 3rem;
+        margin-top: 0;
     }
     h1 {
         font-size: 3rem;
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.8rem; /* Separar título de subtítulo */
         width: 100%;
         text-align: center;
     }
@@ -243,6 +247,7 @@ h1 {
         grid-auto-rows: 1fr;
         gap: 0.5rem;
         padding: 0 0.5rem;
+        margin-bottom: 2rem;
     }
     .card {
         padding: 1.5rem 0.5rem;
@@ -257,7 +262,7 @@ h1 {
         font-size: 0.65rem;
         line-height: 1.2;
         margin-top: 0.5rem;
-        display: none; /* Ocultamos la descripción en móvil para que las pestañas queden limpias */
+        display: none;
     }
     .card-icon {
         height: 2.5rem;
@@ -266,5 +271,28 @@ h1 {
     .card-icon svg {
         width: 2.5rem;
         height: 2.5rem;
+    }
+}
+
+/* Landscape / Pantallas con poca altura */
+@media (max-height: 600px) {
+    body {
+        justify-content: flex-start;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .header-container {
+        margin-top: 0;
+        margin-bottom: 2rem;
+    }
+    h1 {
+        font-size: 4rem;
+        margin-bottom: 0.5rem;
+    }
+    .cards-container {
+        padding: 0 2rem;
+    }
+    .card {
+        padding: 2rem 1rem;
     }
 }
