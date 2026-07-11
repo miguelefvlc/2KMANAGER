@@ -1,4 +1,4 @@
-﻿/**
+/**
  * constants.js â€” Fuente Ãºnica de verdad para constantes globales
  * =============================================================
  * Cargado antes que cualquier script de pÃ¡gina.
@@ -53,6 +53,42 @@ export const TEAM_LOGOS = {
     "Toronto Raptors":         "imgi_271_tor.png",
     "Utah Jazz":               "imgi_281_utah.png",
     "Washington Wizards":      "imgi_291_wsh.png"
+};
+
+// -----------------------------------------------------------------
+// COLORES DE EQUIPOS
+// -----------------------------------------------------------------
+export const TEAM_COLORS = {
+    "Atlanta Hawks":           "rgba(224, 58, 62, 0.85)",
+    "Boston Celtics":          "rgba(0, 122, 51, 0.85)",
+    "Brooklyn Nets":           "rgba(34, 34, 34, 0.85)",
+    "Charlotte Hornets":       "rgba(29, 17, 96, 0.85)",
+    "Chicago Bulls":           "rgba(206, 17, 65, 0.85)",
+    "Cleveland Cavaliers":     "rgba(134, 0, 56, 0.85)",
+    "Dallas Mavericks":        "rgba(0, 83, 140, 0.85)",
+    "Denver Nuggets":          "rgba(14, 34, 64, 0.85)",
+    "Detroit Pistons":         "rgba(200, 16, 46, 0.85)",
+    "Golden State Warriors":   "rgba(29, 66, 138, 0.85)",
+    "Houston Rockets":         "rgba(206, 17, 65, 0.85)",
+    "Indiana Pacers":          "rgba(0, 45, 98, 0.85)",
+    "Los Angeles Clippers":    "rgba(200, 16, 46, 0.85)",
+    "Los Angeles Lakers":      "rgba(85, 37, 131, 0.85)",
+    "Memphis Grizzlies":       "rgba(93, 118, 169, 0.85)",
+    "Miami Heat":              "rgba(152, 0, 46, 0.85)",
+    "Milwaukee Bucks":         "rgba(0, 71, 27, 0.85)",
+    "Minnesota Timberwolves":  "rgba(12, 35, 64, 0.85)",
+    "New Orleans Pelicans":    "rgba(12, 35, 64, 0.85)",
+    "New York Knicks":         "rgba(0, 107, 182, 0.85)",
+    "Oklahoma City Thunder":   "rgba(0, 122, 193, 0.85)",
+    "Orlando Magic":           "rgba(0, 119, 192, 0.85)",
+    "Philadelphia 76ers":      "rgba(0, 107, 182, 0.85)",
+    "Phoenix Suns":            "rgba(29, 17, 96, 0.85)",
+    "Portland Trail Blazers":  "rgba(224, 58, 62, 0.85)",
+    "Sacramento Kings":        "rgba(90, 45, 129, 0.85)",
+    "San Antonio Spurs":       "rgba(68, 68, 68, 0.85)",
+    "Toronto Raptors":         "rgba(206, 17, 65, 0.85)",
+    "Utah Jazz":               "rgba(0, 43, 92, 0.85)",
+    "Washington Wizards":      "rgba(0, 43, 92, 0.85)"
 };
 
 // -----------------------------------------------------------------

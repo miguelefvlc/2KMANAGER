@@ -1,6 +1,6 @@
 import { CSVService } from './shared/csv_service.js';
 import { StorageService } from './shared/storage_service.js';
-import { TEAM_LOGOS } from './shared/constants.js';
+import { TEAM_LOGOS, TEAM_COLORS } from './shared/constants.js';
 import { getPlayerPhotoPath } from './shared/utils.js';
 
 let selectedPlayerCard = null;
@@ -27,12 +27,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('vr-team-name').textContent = targetTeamName.toUpperCase();
     
     let logoSrc = "";
+    let teamKey = null;
     if (typeof TEAM_LOGOS !== 'undefined') {
-        const teamKey = Object.keys(TEAM_LOGOS).find(k => k.toLowerCase() === targetTeamName.toLowerCase());
+        teamKey = Object.keys(TEAM_LOGOS).find(k => k.toLowerCase() === targetTeamName.toLowerCase());
         if (teamKey) logoSrc = 'logos/' + TEAM_LOGOS[teamKey];
     }
     
+    if (teamKey && typeof TEAM_COLORS !== 'undefined' && TEAM_COLORS[teamKey]) {
+        document.documentElement.style.setProperty('--team-color', TEAM_COLORS[teamKey]);
+    } else {
+        document.documentElement.style.setProperty('--team-color', 'rgba(30,41,59,0.85)');
+    }
+    
     if (logoSrc) {
+        document.documentElement.style.setProperty('--team-logo', `url('../${logoSrc}')`);
         document.getElementById('vr-team-logo').src = logoSrc;
         document.getElementById('vr-team-logo').style.display = 'block';
         
