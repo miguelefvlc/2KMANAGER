@@ -19,7 +19,7 @@ export const CSVService = {
                 return;
             }
 
-            fetch(urlPath, { cache: "no-store" })
+            fetch(`${urlPath}?t=${Date.now()}`, { cache: "no-store" })
                 .then(async res => {
                     const buffer = await res.arrayBuffer();
                     try {
