@@ -113,12 +113,23 @@ document.addEventListener("DOMContentLoaded", async () => {
                     card.setAttribute('data-trade', savedStatus);
                 }
 
-                // SortableJS se encarga ahora del Drag & Drop fluido
-
                 const photoSrc = getPlayerPhotoPath(name);
                 const nameParts = name.split(' ');
                 const firstName = nameParts[0];
                 const lastName = nameParts.slice(1).join(' ') || '';
+
+                // Dynamic font scaling for long names
+                let firstNameStyle = '';
+                if (firstName.length > 10) {
+                    const scaleF = Math.max(0.7, 1 - ((firstName.length - 10) * 0.035));
+                    firstNameStyle = `style="font-size: calc(0.55rem * ${scaleF});"`;
+                }
+
+                let lastNameStyle = '';
+                if (lastName.length > 10) {
+                    const scaleL = Math.max(0.65, 1 - ((lastName.length - 10) * 0.035));
+                    lastNameStyle = `style="font-size: calc(0.75rem * ${scaleL}); line-height: 1.1;"`;
+                }
 
                 card.innerHTML = `
                     <div class="vr-card-top">
@@ -130,8 +141,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     </div>
                     <div class="vr-info">
                         <div class="vr-name">
-                            <span class="vr-first-name">${firstName}</span>
-                            <span class="vr-last-name">${lastName}</span>
+                            <span class="vr-first-name" ${firstNameStyle}>${firstName}</span>
+                            <span class="vr-last-name" ${lastNameStyle}>${lastName}</span>
                         </div>
                         <div class="vr-divider"></div>
                         <div class="vr-meta">
