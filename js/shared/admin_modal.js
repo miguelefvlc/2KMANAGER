@@ -1,7 +1,6 @@
 import { isAdmin, writeCSV, applyEconomyDelta, saveTransactionToHistory } from './admin_auth.js';
 import { CSVService } from './csv_service.js';
 import { getPlayerPhotoPath, formatCurrency } from './utils.js';
-import { isGithubSyncEnabled, pushToGithub } from './github_service.js';
 
 let _playersData = [];
 let _teamsData = [];
@@ -210,14 +209,6 @@ async function executeWaive(uid) {
         await writeCSV('players.csv', fullPlayers);
         await writeCSV('economia.csv', fullEconomy);
         
-        if (isGithubSyncEnabled()) {
-            document.getElementById('admin-modal').innerHTML = '<div style="color:white; font-size:1.5rem; text-align:center;">Sincronizando con GitHub...<br><span style="font-size:1rem; color:var(--text-muted);">Por favor espera...</span></div>';
-            await pushToGithub([
-                { path: 'players.csv', content: window.Papa.unparse(fullPlayers) },
-                { path: 'economia.csv', content: window.Papa.unparse(fullEconomy) }
-            ], `Corte de ${p.name}`);
-        }
-
         alert('Jugador cortado correctamente. Recargando datos...');
         location.reload();
     } catch (e) {
@@ -285,14 +276,6 @@ async function executeSign(uid) {
 
         await writeCSV('players.csv', fullPlayers);
         await writeCSV('economia.csv', fullEconomy);
-
-        if (isGithubSyncEnabled()) {
-            document.getElementById('admin-modal').innerHTML = '<div style="color:white; font-size:1.5rem; text-align:center;">Sincronizando con GitHub...<br><span style="font-size:1rem; color:var(--text-muted);">Por favor espera...</span></div>';
-            await pushToGithub([
-                { path: 'players.csv', content: window.Papa.unparse(fullPlayers) },
-                { path: 'economia.csv', content: window.Papa.unparse(fullEconomy) }
-            ], `Firma de ${p.name}`);
-        }
 
         alert('Firma procesada correctamente. Recargando datos...');
         location.reload();
