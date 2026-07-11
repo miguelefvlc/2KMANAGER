@@ -116,16 +116,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                 // SortableJS se encarga ahora del Drag & Drop fluido
 
                 const photoSrc = getPlayerPhotoPath(name);
+                const nameParts = name.split(' ');
+                const firstName = nameParts[0];
+                const lastName = nameParts.slice(1).join(' ') || '';
 
                 card.innerHTML = `
-                    <div class="vr-photo-container">
-                        <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.src='photos/none.svg';">
+                    <div class="vr-card-top">
+                        <div class="vr-photo-bg"></div>
+                        <div class="vr-rating">${rating}</div>
+                        <div class="vr-photo-container">
+                            <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.src='photos/none.svg';">
+                        </div>
                     </div>
-                    <div class="vr-rating">${rating}</div>
                     <div class="vr-info">
-                        <h3 class="vr-name">${name}</h3>
+                        <div class="vr-name">
+                            <span class="vr-first-name">${firstName}</span>
+                            <span class="vr-last-name">${lastName}</span>
+                        </div>
+                        <div class="vr-divider"></div>
                         <div class="vr-meta">
-                            <span>${pos}</span>
+                            <span class="vr-position-text">${pos.replace(/,/g, ' | ')}</span>
+                            <span class="vr-dot">•</span>
                             <span>${age} AÑOS</span>
                         </div>
                     </div>
@@ -144,14 +155,30 @@ document.addEventListener("DOMContentLoaded", async () => {
                 grid.appendChild(card);
             });
 
+            // Add empty placeholder slots to fill the grid to a multiple of 5
+            // so the last row always has 5 cells (empty ones are invisible spacers)
+            const COLS = 5;
+            const remainder = teamPlayers.length % COLS;
+            if (remainder !== 0) {
+                const empties = COLS - remainder;
+                for (let i = 0; i < empties; i++) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'vr-card-placeholder';
+                    grid.appendChild(placeholder);
+                }
+            }
+
             // Iniciar SortableJS para animaciones fluidas
             if (typeof Sortable !== 'undefined') {
                 new Sortable(grid, {
                     animation: 250,
                     easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                     ghostClass: "dragging",
+                    filter: ".vr-card-placeholder",
                     onEnd: function (evt) {
-                        const newOrder = Array.from(grid.children).map(c => c.dataset.playerName);
+                        const newOrder = Array.from(grid.children)
+                            .filter(c => c.dataset.playerName)
+                            .map(c => c.dataset.playerName);
                         StorageService.setItem(`roster_order_${targetTeamName}`, newOrder);
                     }
                 });
