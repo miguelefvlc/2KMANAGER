@@ -1,6 +1,7 @@
 // Simple Promise wrapper for IndexedDB to store the directory handle
 const DB_NAME = '2kOfficeAdminDB';
 const STORE_NAME = 'handles';
+import { isGithubSyncEnabled, pushToGithub } from './github_service.js';
 
 function initDB() {
     return new Promise((resolve, reject) => {
@@ -157,7 +158,82 @@ export function injectAdminButton() {
         historyBtn.addEventListener('click', showHistoryModal);
         
         document.body.appendChild(historyBtn);
+
+        const ghBtn = document.createElement('div');
+        ghBtn.textContent = '☁️ GitHub Sync';
+        ghBtn.style.position = 'fixed';
+        ghBtn.style.bottom = '10px';
+        ghBtn.style.right = '180px'; // Next to History
+        ghBtn.style.fontSize = '12px';
+        ghBtn.style.fontWeight = 'bold';
+        ghBtn.style.color = '#38bdf8'; // light blue
+        ghBtn.style.cursor = 'pointer';
+        ghBtn.style.opacity = '0.5';
+        ghBtn.style.zIndex = '99999';
+        ghBtn.style.fontFamily = 'sans-serif';
+        ghBtn.style.padding = '5px 10px';
+        ghBtn.style.background = 'rgba(0,0,0,0.5)';
+        ghBtn.style.borderRadius = '4px';
+        
+        ghBtn.addEventListener('mouseenter', () => ghBtn.style.opacity = '1');
+        ghBtn.addEventListener('mouseleave', () => ghBtn.style.opacity = '0.5');
+        
+        ghBtn.addEventListener('click', showGithubConfigModal);
+        
+        document.body.appendChild(ghBtn);
     }
+}
+
+function showGithubConfigModal() {
+    let modal = document.getElementById('gh-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'gh-modal';
+        modal.style.cssText = 'display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:100000; justify-content:center; align-items:center; padding: 20px;';
+        document.body.appendChild(modal);
+    }
+    
+    const token = localStorage.getItem('gh_token') || '';
+    const owner = localStorage.getItem('gh_owner') || '';
+    const repo = localStorage.getItem('gh_repo') || '';
+    const branch = localStorage.getItem('gh_branch') || 'main';
+
+    window.saveGithubConfig = function() {
+        localStorage.setItem('gh_token', document.getElementById('gh-input-token').value.trim());
+        localStorage.setItem('gh_owner', document.getElementById('gh-input-owner').value.trim());
+        localStorage.setItem('gh_repo', document.getElementById('gh-input-repo').value.trim());
+        localStorage.setItem('gh_branch', document.getElementById('gh-input-branch').value.trim() || 'main');
+        alert('Configuración de GitHub guardada correctamente.');
+        document.getElementById('gh-modal').style.display='none';
+    }
+
+    modal.innerHTML = `
+        <div style="background:#1f2937; border:1px solid var(--border-subtle); border-radius:12px; padding:24px; max-width:400px; width:100%; position:relative; font-family: 'Inter', sans-serif;">
+            <button onclick="document.getElementById('gh-modal').style.display='none'" style="position:absolute; top:16px; right:20px; background:none; border:none; font-size:24px; color:var(--text-muted); cursor:pointer;">&times;</button>
+            <h3 style="color:var(--text-main); margin-bottom:20px; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">Configuración GitHub Sync</h3>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:5px;">Personal Access Token (PAT)</label>
+                <input type="password" id="gh-input-token" value="${token}" style="width:100%; padding:8px; border-radius:4px; background:var(--bg-surface); color:var(--text-main); border:1px solid var(--border-subtle);" placeholder="ghp_...">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:5px;">Usuario (Owner)</label>
+                <input type="text" id="gh-input-owner" value="${owner}" style="width:100%; padding:8px; border-radius:4px; background:var(--bg-surface); color:var(--text-main); border:1px solid var(--border-subtle);" placeholder="ej. mipas">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:5px;">Repositorio</label>
+                <input type="text" id="gh-input-repo" value="${repo}" style="width:100%; padding:8px; border-radius:4px; background:var(--bg-surface); color:var(--text-main); border:1px solid var(--border-subtle);" placeholder="ej. 2koffice">
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:5px;">Rama (Branch)</label>
+                <input type="text" id="gh-input-branch" value="${branch}" style="width:100%; padding:8px; border-radius:4px; background:var(--bg-surface); color:var(--text-main); border:1px solid var(--border-subtle);" placeholder="main">
+            </div>
+            
+            <button onclick="saveGithubConfig()" style="background:var(--accent-blue); color:#fff; border:none; padding:10px; width:100%; border-radius:6px; font-weight:bold; cursor:pointer;">Guardar Configuración</button>
+            <p style="font-size:0.75rem; color:var(--text-muted); margin-top:15px; text-align:center;">Si estos datos están rellenados, los cambios se subirán automáticamente a GitHub.</p>
+        </div>
+    `;
+    modal.style.display = 'flex';
 }
 
 export function saveTransactionToHistory(description, oldPlayers, oldEconomy, oldDrafts = null) {
@@ -204,6 +280,17 @@ export async function undoTransaction(index) {
         await writeCSV('economia.csv', item.economy);
         if (item.drafts) {
             await writeCSV('draft_picks.csv', item.drafts);
+        }
+
+        if (isGithubSyncEnabled()) {
+            document.getElementById('history-modal').innerHTML = '<div style="color:white; font-size:1.5rem; text-align:center;">Deshaciendo y sincronizando con GitHub...<br><span style="font-size:1rem; color:var(--text-muted);">Por favor espera...</span></div>';
+            let filesToSync = [];
+            filesToSync.push({ path: 'players.csv', content: window.Papa.unparse(item.players) });
+            filesToSync.push({ path: 'economia.csv', content: window.Papa.unparse(item.economy) });
+            if (item.drafts) {
+                filesToSync.push({ path: 'draft_picks.csv', content: window.Papa.unparse(item.drafts) });
+            }
+            await pushToGithub(filesToSync, "Deshacer: " + item.description);
         }
         
         // Remove this and all subsequent transactions

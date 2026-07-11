@@ -18,6 +18,7 @@
 import { CSVService } from './shared/csv_service.js';
 import { isAdmin, injectAdminButton, writeCSV, applyEconomyDelta, saveTransactionToHistory } from './shared/admin_auth.js';
 import { calculateAge, parseCurrency, formatCurrency, getPlayerPhotoPath, generate2kRatingUrl, formatCurrencyOpt } from './shared/utils.js';
+import { isGithubSyncEnabled, pushToGithub } from './shared/github_service.js';
 
 let teamsData    = [];
 let playersData  = [];
@@ -821,6 +822,15 @@ window.executeOfficialTrade = async function() {
         if (changedPlayers) await writeCSV('players.csv', fullPlayers);
         if (changedDrafts) await writeCSV('draft_picks.csv', fullDrafts);
         if (changedEconomy) await writeCSV('economia.csv', fullEconomy);
+
+        if (isGithubSyncEnabled()) {
+            document.getElementById('trade-validation').innerHTML = '<div style="color:white; font-size:1.5rem; text-align:center; padding: 20px;">Sincronizando con GitHub...<br><span style="font-size:1rem; color:var(--text-muted);">Por favor espera...</span></div>';
+            let filesToSync = [];
+            if (changedPlayers) filesToSync.push({ path: 'players.csv', content: window.Papa.unparse(fullPlayers) });
+            if (changedDrafts) filesToSync.push({ path: 'draft_picks.csv', content: window.Papa.unparse(fullDrafts) });
+            if (changedEconomy) filesToSync.push({ path: 'economia.csv', content: window.Papa.unparse(fullEconomy) });
+            await pushToGithub(filesToSync, desc);
+        }
 
         alert("Traspaso hecho oficial y guardado correctamente.");
         location.reload();
