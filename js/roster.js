@@ -1,10 +1,15 @@
 import { CSVService } from './shared/csv_service.js';
 import { TEAM_LOGOS } from './shared/constants.js';
 import { calculateAge, getPlayerPhotoPath, generate2kRatingUrl, getOptClass, formatCurrencyOpt, formatCurrency, parseCurrency } from './shared/utils.js';
+import { isAdmin, injectAdminButton } from './shared/admin_auth.js';
+import { setupAdminModal } from './shared/admin_modal.js';
 
+let playersData = [];
+let teamsData = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Obtener parÃƒÂ¡metro de URL
+    injectAdminButton();
+    // 1. Obtener parámetro de URL
     const urlParams = new URLSearchParams(window.location.search);
     const teamNameParam = urlParams.get('team');
 
@@ -17,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const targetTeamName = teamNameParam;
 
-    // Configurar botÃƒÂ³n Visual Roster
+    // Configurar botón Visual Roster
     const vrBtn = document.getElementById('visual-roster-btn');
     if (vrBtn) {
         vrBtn.href = `visual_roster.html?team=${encodeURIComponent(targetTeamName)}`;
@@ -41,7 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-
     // 2. Establecer Cabecera
     document.getElementById('roster-team-name').textContent = targetTeamName.toUpperCase();
     const logoSrc = TEAM_LOGOS[targetTeamName] ? 'logos/' + TEAM_LOGOS[targetTeamName] : "";
@@ -58,6 +62,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             CSVService.getEconomy()
         ]);
 
+        // Parse teams for Admin Modal
+        parsedEco.forEach((teamRow, idx) => {
+            let tName = teamRow["Equipo"] || teamRow["Team"] || "Equipo " + (idx+1);
+            tName = tName.replace(/['"]/g, '').trim();
+            teamsData.push({
+                id: (idx + 1).toString(),
+                name: tName
+            });
+        });
+
         // 4. Buscar Equipo en economia.csv para obtener su ID y sus datos financieros
         let teamId = null;
         let teamEconomyData = null;
@@ -72,18 +86,48 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         if (!teamId) {
-            console.error("No se encontrÃƒÂ³ el equipo en economia.csv");
+            console.error("No se encontró el equipo en economia.csv");
             document.getElementById('loader').style.display = 'none';
             document.getElementById('roster-content').style.display = 'block';
             return;
         }
 
-        // 5. Rellenar Tabla EconomÃƒÂ­a
+        // Parse players into uniform structure for Admin Modal
+        parsedPlayers.forEach((p, idx) => {
+            const isFA = !p.team_id || p.team_id.trim() === '' || p.team_id === '0' || p.team_id === '31' || (parseFloat(p.t1) || 0) === 0;
+            const teamObj = teamsData.find(t => t.id === p.team_id);
+            const tName = isFA ? 'FA' : (teamObj ? teamObj.name : '-');
+            
+            playersData.push({
+                uid: 'p' + idx,
+                originalIndex: idx, 
+                originalRaw: p, 
+                name: p.Player,
+                teamId: p.team_id,
+                teamName: tName,
+                salary: parseFloat(p.t1) || 0,
+                pos: p.Position || '-',
+                rating: parseInt(p.Rating) || 0,
+                t1: p.t1 || 0, o1: p.o1 || '',
+                t2: p.t2 || 0, o2: p.o2 || '',
+                t3: p.t3 || 0, o3: p.o3 || '',
+                t4: p.t4 || 0, o4: p.o4 || '',
+                t5: p.t5 || 0, o5: p.o5 || '',
+                t6: p.t6 || 0, o6: p.o6 || '',
+                age: calculateAge(p.FechaNacimiento),
+                isFA: isFA
+            });
+        });
+
+        // Initialize admin modal using the mapped data
+        setupAdminModal(playersData, teamsData);
+
+        // 5. Rellenar Tabla Economía
         const ecoBody = document.getElementById('economy-body');
         ecoBody.innerHTML = ''; // Clear
         
         if (teamEconomyData) {
-            // Extraer las claves principales de economÃƒÂ­a
+            // Extraer las claves principales de economía
             const keys = [
                 "Disponible limite salarial",
                 "Disponible presupuesto",
@@ -133,7 +177,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (teamPlayers.length === 0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="9" class="text-center text-muted">No hay jugadores en plantilla.</td>`;
+            tr.innerHTML = `<td colspan="11" class="text-center text-muted">No hay jugadores en plantilla.</td>`;
             rosterBody.appendChild(tr);
         } else {
             teamPlayers.forEach(p => {
@@ -142,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const bird = p.Bird && p.Bird !== '0' ? p.Bird : '-';
                 const r = p.FA && p.FA.toUpperCase() === 'R' ? 'R' : '';
                 
-                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.Player)}&background=1f2937&color=f3f4f6&rounded=true&size=32`;
+                const fallbackUrl = 'photos/none.svg';
                 const photoPath = getPlayerPhotoPath(p.Player);
                 const url2k = generate2kRatingUrl(p.Player);
                 
@@ -180,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 draftBody.innerHTML = `<tr><td colspan="3" class="text-center" style="color: var(--text-muted); font-style: italic;">No hay rondas registradas.</td></tr>`;
             } else {
                 const sample = parsedDraft[0] || {};
-                const yearKey = Object.keys(sample).find(k => k.includes('A') && k.includes('o')) || 'AÃƒÂ±o';
+                const yearKey = Object.keys(sample).find(k => k.includes('A') && k.includes('o')) || 'Año';
                 
                 teamDraftPicks.sort((a, b) => {
                     const ya = parseInt(a[yearKey] || 0);

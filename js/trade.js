@@ -16,6 +16,7 @@
  *  7. generateNotification() — Exportar resumen al portapapeles
  */
 import { CSVService } from './shared/csv_service.js';
+import { isAdmin, injectAdminButton, writeCSV, applyEconomyDelta, saveTransactionToHistory } from './shared/admin_auth.js';
 import { calculateAge, parseCurrency, formatCurrency, getPlayerPhotoPath, generate2kRatingUrl, formatCurrencyOpt } from './shared/utils.js';
 
 let teamsData    = [];
@@ -24,6 +25,7 @@ let draftsData   = [];
 let tradeColumns = [];
 
 async function init() {
+    injectAdminButton();
     try {
         const [parsedPlayers, parsedEco, parsedDrafts] = await Promise.all([
             CSVService.getPlayers(),
@@ -49,6 +51,8 @@ async function init() {
             
             playersData.push({
                 uid: 'p' + idx,
+                originalIndex: idx,
+                originalRaw: p,
                 name: p.Player,
                 teamId: p.team_id,
                 salary: t1Val,
@@ -73,6 +77,8 @@ async function init() {
             const teamId = team ? team.id : null;
             draftsData.push({
                 uid: 'd' + idx,
+                originalIndex: idx,
+                originalRaw: d,
                 teamId: teamId,
                 year: d["Año"],
                 round: d["Ronda"],
@@ -151,7 +157,7 @@ function renderBoard() {
 
                 if (isTraded) {
                     salaryOut += p.salary;
-                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=ef4444&color=fff&rounded=true&size=32`;
+                    const fallbackUrl = 'photos/none.svg';
                     playersHtml += `
                         <div class="player-item traded-player" onmouseenter="showTooltip(event, '${p.uid}')" onmouseleave="hideTooltip()" onmousemove="moveTooltip(event)">
                             <img src="${getPlayerPhotoPath(p.name)}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; opacity: 0.8; object-fit: cover; background: var(--bg-surface);">
@@ -170,7 +176,7 @@ function renderBoard() {
                         </div>
                     `;
                 } else {
-                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=1f2937&color=f3f4f6&rounded=true&size=32`;
+                    const fallbackUrl = 'photos/none.svg';
                     playersHtml += `
                         <div class="player-item" onmouseenter="showTooltip(event, '${p.uid}')" onmouseleave="hideTooltip()" onmousemove="moveTooltip(event)">
                             <img src="${getPlayerPhotoPath(p.name)}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; object-fit: cover; background: var(--bg-surface);">
@@ -556,8 +562,9 @@ function validateTrade() {
     });
     
     html += `
-        <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
             <button onclick="generateNotification()" style="font-size: 12px; padding: 6px 12px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border-subtle); background: var(--bg-surface); color: var(--text-base);">Notificar</button>
+            ${isAdmin() && isApproved ? '<button onclick="executeOfficialTrade()" style="font-size: 12px; padding: 6px 12px; cursor: pointer; border-radius: 4px; border: none; background: var(--accent-green); color: white; font-weight: bold;">EFECTUAR TRASPASO</button>' : ''}
         </div>
     `;
     
@@ -742,6 +749,85 @@ function formatPlayerSalaryStr(p) {
     if (p.r === 'R') parts.push('R');
     
     return `${parts.join(' / ')} ${salaryStr}`;
+}
+
+window.executeOfficialTrade = async function() {
+    if (!isAdmin() || !confirm("¿Estás seguro de hacer oficial este traspaso? Los cambios se aplicarán en los CSVs.")) return;
+    
+    try {
+        const fullPlayers = await CSVService.getPlayers(true);
+        const fullDrafts = await CSVService.getDraftPicks(true);
+        const fullEconomy = await CSVService.getEconomy(true);
+        
+        // Backup para deshacer
+        const backupP = JSON.parse(JSON.stringify(fullPlayers));
+        const backupE = JSON.parse(JSON.stringify(fullEconomy));
+        const backupD = JSON.parse(JSON.stringify(fullDrafts));
+        
+        const desc = "Traspaso Oficial entre " + tradeColumns.map(c => {
+            const t = teamsData.find(x => x.id === c.teamId);
+            return t ? t.name : "Equipo";
+        }).join(" y ");
+        saveTransactionToHistory(desc, backupP, backupE, backupD);
+
+        let changedPlayers = false;
+        let changedDrafts = false;
+        let changedEconomy = false;
+
+        tradeColumns.forEach(col => {
+            if (!col.teamId) return;
+            const destTeamObj = teamsData.find(t => t.id === col.teamId);
+            
+            // All outgoing items from other columns to THIS column (Team receiving)
+            const incomingItems = tradeColumns.flatMap(c => c.tradesOut).filter(t => t.toTeamId === col.teamId);
+            const outgoingItems = col.tradesOut;
+
+            let salaryIn = 0;
+            let salaryOut = 0;
+
+            incomingItems.forEach(item => {
+                if (item.playerUid.startsWith('p')) {
+                    const p = playersData.find(x => x.uid === item.playerUid);
+                    if (p) {
+                        salaryIn += p.salary;
+                        p.originalRaw.team_id = col.teamId;
+                        Object.assign(fullPlayers[p.originalIndex], p.originalRaw);
+                        changedPlayers = true;
+                    }
+                } else if (item.playerUid.startsWith('d')) {
+                    const d = draftsData.find(x => x.uid === item.playerUid);
+                    if (d) {
+                        d.originalRaw["Equipo"] = destTeamObj.name;
+                        Object.assign(fullDrafts[d.originalIndex], d.originalRaw);
+                        changedDrafts = true;
+                    }
+                }
+            });
+
+            outgoingItems.forEach(item => {
+                if (item.playerUid.startsWith('p')) {
+                    const p = playersData.find(x => x.uid === item.playerUid);
+                    if (p) salaryOut += p.salary;
+                }
+            });
+
+            let diff = salaryIn - salaryOut;
+            if (diff !== 0) {
+                applyEconomyDelta(fullEconomy, col.teamId, diff);
+                changedEconomy = true;
+            }
+        });
+
+        if (changedPlayers) await writeCSV('players.csv', fullPlayers);
+        if (changedDrafts) await writeCSV('draft_picks.csv', fullDrafts);
+        if (changedEconomy) await writeCSV('economia.csv', fullEconomy);
+
+        alert("Traspaso hecho oficial y guardado correctamente.");
+        location.reload();
+    } catch (e) {
+        console.error(e);
+        alert("Error al guardar: " + e.message);
+    }
 }
 
 init();

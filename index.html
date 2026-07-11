@@ -58,7 +58,11 @@
         -->
     </div>
 
-    <!-- Scripts removidos porque ya no hay código de acceso -->
+    <!-- Admin Support -->
+    <script type="module">
+        import { injectAdminButton } from './js/shared/admin_auth.js';
+        injectAdminButton();
+    </script>
 </body>
 </html>
 

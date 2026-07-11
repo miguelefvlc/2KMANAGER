@@ -1,11 +1,15 @@
 import { CSVService } from './shared/csv_service.js';
 import { calculateAge, getPlayerPhotoPath, generate2kRatingUrl, getOptClass, formatCurrencyOpt } from './shared/utils.js';
+import { isAdmin, injectAdminButton } from './shared/admin_auth.js';
+import { setupAdminModal } from './shared/admin_modal.js';
 
 let playersData = [];
 let teamsData = [];
 let currentSort = { column: 'rating', asc: false };
 
 async function init() {
+    injectAdminButton();
+
     try {
         const [parsedPlayers, parsedEco] = await Promise.all([
             CSVService.getPlayers(),
@@ -40,6 +44,8 @@ async function init() {
             // Keep all players for the players section, unlike trade which filters out FAs
             playersData.push({
                 uid: 'p' + idx,
+                originalIndex: idx, // For CSV update mapping
+                originalRaw: p, // Keep original data reference
                 name: p.Player,
                 teamId: p.team_id,
                 teamName: teamName,
@@ -51,6 +57,10 @@ async function init() {
                 t3: p.t3 || 0, o3: p.o3 || '',
                 t4: p.t4 || 0, o4: p.o4 || '',
                 t5: p.t5 || 0, o5: p.o5 || '',
+                t6: p.t6 || 0, o6: p.o6 || '',
+                minimum: p.Minimum || 0,
+                maximum: p.Maximum || 0,
+                caphold: p.caphold || 0,
                 age: calculateAge(p.FechaNacimiento),
                 bird: p.Bird || '-',
                 r: p.FA && p.FA.toUpperCase() === 'R' ? 'R' : '',
@@ -58,6 +68,7 @@ async function init() {
             });
         });
 
+        setupAdminModal(playersData, teamsData);
         setupFilters();
         applyFiltersAndRender();
         
@@ -192,7 +203,8 @@ function applyFiltersAndRender() {
         }
     });
 
-    document.getElementById('players-count').textContent = filtered.length;
+    const countEl = document.getElementById('players-count');
+    if (countEl) countEl.textContent = filtered.length;
 
     const tbody = document.getElementById('players-tbody');
     const noResults = document.getElementById('no-results');
@@ -206,16 +218,21 @@ function applyFiltersAndRender() {
     noResults.style.display = 'none';
     
     let html = '';
+    const adminStyle = isAdmin() ? 'cursor:pointer;' : '';
+    const adminHoverClass = isAdmin() ? 'admin-hover-row' : '';
+    
     filtered.forEach(p => {
-        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=1f2937&color=f3f4f6&rounded=true&size=32`;
+        const fallbackUrl = 'photos/none.svg';
         const photoPath = typeof getPlayerPhotoPath === 'function' ? getPlayerPhotoPath(p.name) : fallbackUrl;
         const url2k = typeof generate2kRatingUrl === 'function' ? generate2kRatingUrl(p.name) : '#';
         
+        const trAction = isAdmin() ? `onclick="openAdminModal('${p.uid}')"` : '';
+
         html += `
-            <tr>
+            <tr style="${adminStyle}" ${trAction} class="${adminHoverClass}">
                 <td data-label="Jugador" style="text-align:left; display: flex; align-items: center; gap: 10px;">
                     <img src="${photoPath}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--bg-surface);">
-                    <a href="${url2k}" target="_blank" style="color: inherit; text-decoration: none; font-weight: 600;" title="Ver en 2kratings">
+                    <a href="${url2k}" style="color: inherit; text-decoration: none; font-weight: 600;" title="Ver en 2kratings" onclick="window.open('${url2k}', '_blank'); event.stopPropagation(); return false;">
                         ${p.name}
                     </a>
                 </td>

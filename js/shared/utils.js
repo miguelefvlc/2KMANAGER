@@ -3,17 +3,6 @@
  * ============================================
  */
 
-export async function fetchCSV(url) {
-    const res = await fetch(url, { cache: 'no-store' });
-    const buffer = await res.arrayBuffer();
-    try {
-        const utf8Decoder = new TextDecoder('utf-8', { fatal: true });
-        return utf8Decoder.decode(buffer);
-    } catch (e) {
-        const ansiDecoder = new TextDecoder('windows-1252');
-        return ansiDecoder.decode(buffer);
-    }
-}
 
 export function parseCurrency(str) {
     if(!str) return 0;
@@ -64,7 +53,7 @@ export function calculateRoundModifier(salary, round) {
 }
 
 export function getPlayerPhotoPath(playerName) {
-    if (!playerName) return '';
+    if (!playerName) return 'photos/none.svg';
     let slug = playerName.toLowerCase();
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     slug = slug.replace(/['\.]/g, "");

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1400">
+    <title>Agentes Libres - 2k OFFICE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <a href="index.html" class="home-btn" title="Volver al inicio">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+        </svg>
+    </a>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="font-size: 14px; font-weight: 500; color: var(--text-muted); margin-top: 15px;">Cargando Datos...</div>
+    </div>
+
+    <div class="top-bar">
+        <div class="brand">
+            <h1>Agentes Libres</h1>
+            <p>Buscador de Jugadores sin Equipo</p>
+        </div>
+    </div>
+
+    <div class="players-layout" style="display: block;">
+        <!-- Tabla de Jugadores -->
+        <div class="players-content panel">
+            
+            <!-- Buscador -->
+            <div style="margin-bottom: 20px;">
+                <div class="search-input-container" style="max-width: 400px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="search-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                    <input type="text" id="filter-name" placeholder="Buscar jugador por nombre...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="tooltip-table players-main-table" id="players-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; cursor:pointer;" onclick="sortBy('name')">Jugador ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('pos')">Pos ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('rating')">Rating ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('age')">Age ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('bird')">Bird ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('r')">R ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('minimum')">Mínimo ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('maximum')">Máximo ↕</th>
+                            <th style="cursor:pointer;" onclick="sortBy('caphold')">Cap Hold (CH) ↕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="players-tbody">
+                        <!-- Filas inyectadas por JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="no-results" style="display:none; text-align:center; padding: 40px; color: var(--text-muted);">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 48px; height: 48px; margin: 0 auto 15px; opacity: 0.5;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm3.65 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Z" />
+                </svg>
+                <p>No se encontraron jugadores que coincidan con los filtros.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script type="module" src="js/agentes_libres.js"></script>
+</body>
+</html>
+
+

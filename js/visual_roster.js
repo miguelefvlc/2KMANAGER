@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 card.innerHTML = `
                     <div class="vr-photo-container">
-                        <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.style.opacity='0.05';">
+                        <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.src='photos/none.svg';">
                     </div>
                     <div class="vr-rating">${rating}</div>
                     <div class="vr-info">
