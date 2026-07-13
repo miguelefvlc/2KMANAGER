@@ -41,7 +41,6 @@ window.scanThreatsLogic = function(player, allTeams, activeTeamName) {
         const t = threat.team;
         threatsCount++;
 
-        let capClass = t.cap < 0 ? 'color-red' : 'color-green';
         let efClass = t.efectivo < 0 ? 'color-red' : 'color-green';
         
         let opacityStyle = "";

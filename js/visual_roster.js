@@ -81,8 +81,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Render
         const grid = document.getElementById('vr-grid');
         grid.innerHTML = '';
-        
-        let dragSrcEl = null;
 
         if (teamPlayers.length === 0) {
             grid.innerHTML = '<p style="color: #94a3b8; text-align: center; width: 100%; grid-column: 1 / -1; font-size: 1.2rem;">No hay jugadores asignados a este equipo.</p>';
