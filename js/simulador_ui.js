@@ -163,7 +163,7 @@ window.openRivalModal = function(teamName) {
     if (!t) return;
 
     // Obtener la ruta del logo
-    const logoFile = typeof TEAM_LOGOS !== 'undefined' && TEAM_LOGOS[teamName] ? `logos/${TEAM_LOGOS[teamName]}` : '';
+    const logoFile = typeof TEAM_LOGOS !== 'undefined' && TEAM_LOGOS[teamName] ? `assets/logos/${TEAM_LOGOS[teamName]}` : '';
     const logoHtml = logoFile ? `<img src="${logoFile}" alt="${teamName}" style="max-height: 80px; display: block; margin: 0 auto;">` : `<span style="font-size:24px;">${teamName}</span>`;
 
     // Configurar el título

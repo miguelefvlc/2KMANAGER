@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const a = document.createElement('a');
             a.href = `roster.html?team=${encodeURIComponent(team)}`;
             const img = document.createElement('img');
-            img.src = 'logos/' + TEAM_LOGOS[team];
+            img.src = 'assets/logos/' + TEAM_LOGOS[team];
             img.className = 'roster-nav-logo';
             img.title = team;
             if (team.toLowerCase() === targetTeamName.toLowerCase()) {
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // 2. Establecer Cabecera
     document.getElementById('roster-team-name').textContent = targetTeamName.toUpperCase();
-    const logoSrc = TEAM_LOGOS[targetTeamName] ? 'logos/' + TEAM_LOGOS[targetTeamName] : "";
+    const logoSrc = TEAM_LOGOS[targetTeamName] ? 'assets/logos/' + TEAM_LOGOS[targetTeamName] : "";
     if (logoSrc) {
         document.getElementById('roster-team-logo').src = logoSrc;
     } else {
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const bird = p.Bird && p.Bird !== '0' ? p.Bird : '-';
                 const r = p.FA && p.FA.toUpperCase() === 'R' ? 'R' : '';
                 
-                const fallbackUrl = 'photos/none.svg';
+                const fallbackUrl = 'assets/photos/none.svg';
                 const photoPath = getPlayerPhotoPath(p.Player);
                 const url2k = generate2kRatingUrl(p.Player);
                 

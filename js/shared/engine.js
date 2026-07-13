@@ -150,7 +150,7 @@ window.renderLogoGrid = function renderLogoGrid() {
         const btn  = document.createElement('div');
         btn.className = 'team-logo-btn';
         btn.title     = name;
-        btn.innerHTML = `<img src="logos/${file}" alt="${name}">`;
+        btn.innerHTML = `<img src="assets/logos/${file}" alt="${name}">`;
         btn.onclick   = () => selectTeamByLogo(name);
         grid.appendChild(btn);
     });
@@ -163,7 +163,7 @@ window.renderLogoGrid = function renderLogoGrid() {
 window.updateActiveTeamUI = function updateActiveTeamUI(name) {
     const logoImg = document.getElementById('active-team-logo');
     if (logoImg && TEAM_LOGOS[name]) {
-        logoImg.src = `logos/${TEAM_LOGOS[name]}`;
+        logoImg.src = `assets/logos/${TEAM_LOGOS[name]}`;
     }
 };
 
@@ -226,7 +226,7 @@ window.renderTopTeamsBar = function() {
         wrapper.title     = `${t.name}\nEfectivo: ${formatCurrency(t.efectivo)}\nJugadores: ${t.numPlayers}`;
 
         const img = document.createElement('img');
-        img.src       = `logos/${file}`;
+        img.src       = `assets/logos/${file}`;
         img.alt       = t.name;
         img.className = 'team-logo-img';
         if (t.numPlayers >= ROSTER_FULL) img.classList.add('disabled');

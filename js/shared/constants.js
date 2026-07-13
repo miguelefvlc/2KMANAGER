@@ -10,9 +10,9 @@
 // RUTAS A LOS ARCHIVOS DE DATOS
 // -----------------------------------------------------------------
 export const CSV_URLS = {
-    players:  'players.csv',
-    economia: 'economia.csv',
-    draft:    'draft_picks.csv'
+    players:  'data/players.csv',
+    economia: 'data/economia.csv',
+    draft:    'data/draft_picks.csv'
 };
 
 // ID especial que identifica a los Agentes Libres en players.csv
@@ -20,7 +20,7 @@ export const FA_TEAM_ID = '31';
 
 // -----------------------------------------------------------------
 // LOGOS DE EQUIPOS
-// Mapa: Nombre oficial del equipo â†’ archivo de imagen (en /logos/)
+// Mapa: Nombre oficial del equipo → archivo de imagen (en assets/logos/)
 // -----------------------------------------------------------------
 export const TEAM_LOGOS = {
     "Atlanta Hawks":           "imgi_287_atl.png",

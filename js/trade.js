@@ -157,7 +157,7 @@ function renderBoard() {
 
                 if (isTraded) {
                     salaryOut += p.salary;
-                    const fallbackUrl = 'photos/none.svg';
+                    const fallbackUrl = 'assets/photos/none.svg';
                     playersHtml += `
                         <div class="player-item traded-player" onmouseenter="showTooltip(event, '${p.uid}')" onmouseleave="hideTooltip()" onmousemove="moveTooltip(event)">
                             <img src="${getPlayerPhotoPath(p.name)}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; opacity: 0.8; object-fit: cover; background: var(--bg-surface);">
@@ -176,7 +176,7 @@ function renderBoard() {
                         </div>
                     `;
                 } else {
-                    const fallbackUrl = 'photos/none.svg';
+                    const fallbackUrl = 'assets/photos/none.svg';
                     playersHtml += `
                         <div class="player-item" onmouseenter="showTooltip(event, '${p.uid}')" onmouseleave="hideTooltip()" onmousemove="moveTooltip(event)">
                             <img src="${getPlayerPhotoPath(p.name)}" onerror="this.onerror=null; this.src='${fallbackUrl}';" alt="${p.name}" style="width: 28px; height: 28px; border-radius: 50%; margin-right: 10px; object-fit: cover; background: var(--bg-surface);">

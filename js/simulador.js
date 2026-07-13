@@ -267,7 +267,7 @@ function renderStudyTable() {
         let aspirantesHTML = `<div style="display: flex; flex-wrap: wrap; gap: 4px;">`;
 
         if (p.simulatedSigned && p.simTx) {
-            const teamLogo = TEAM_LOGOS[p.simTx.team] ? `logos/${TEAM_LOGOS[p.simTx.team]}` : '';
+            const teamLogo = TEAM_LOGOS[p.simTx.team] ? `assets/logos/${TEAM_LOGOS[p.simTx.team]}` : '';
             if (p.simTx.isDelayed) {
                 aspirantesHTML += `
                     <div style="display:flex; align-items:center; gap: 6px; padding: 4px 8px; background: rgba(59, 130, 246, 0.2); border-radius: 4px; border: 1px solid var(--accent-blue); cursor: pointer;" title="Haz click para deshacer" onclick="event.stopPropagation(); undoSimulatedSigning(${p.id})">
@@ -314,7 +314,7 @@ function renderStudyTable() {
                 const borderColor = canBidImmediate ? 'var(--accent-green)' : 'var(--accent-yellow)';
                 const opacity     = canBidImmediate ? '1' : '0.6';
                 const title       = `${t.name}\nEstado: ${canBidImmediate ? 'Dinero listo' : 'Necesita renunciar a derechos'}`;
-                const logoUrl     = TEAM_LOGOS[t.name] ? `logos/${TEAM_LOGOS[t.name]}` : '';
+                const logoUrl     = TEAM_LOGOS[t.name] ? `assets/logos/${TEAM_LOGOS[t.name]}` : '';
                 if (logoUrl) {
                     aspirantesHTML += `<img src="${logoUrl}" title="${title}" onclick="event.stopPropagation(); openGlobalSignModal(${p.id}, '${t.name}')" style="height: 24px; cursor: pointer; border: 2px solid ${borderColor}; border-radius: 4px; padding: 2px; background: var(--bg-panel); opacity: ${opacity}; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">`;
                 }
@@ -397,7 +397,7 @@ window.renderSignedPlayersList = function() {
         const { salary, exception, isDelayed, team: teamName } = p.simTx;
         const excText  = isDelayed ? 'Firma Retrasada' : excLabel(exception);
         const photoUrl = getPlayerPhotoPath(p.name);
-        const logoUrl  = TEAM_LOGOS[teamName] ? `logos/${TEAM_LOGOS[teamName]}` : '';
+        const logoUrl  = TEAM_LOGOS[teamName] ? `assets/logos/${TEAM_LOGOS[teamName]}` : '';
 
         const folded = document.createElement('div');
         folded.className = 'panel';

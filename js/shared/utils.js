@@ -53,13 +53,13 @@ export function calculateRoundModifier(salary, round) {
 }
 
 export function getPlayerPhotoPath(playerName) {
-    if (!playerName) return 'photos/none.svg';
+    if (!playerName) return 'assets/photos/none.svg';
     let slug = playerName.toLowerCase();
     slug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     slug = slug.replace(/['\.]/g, "");
     slug = slug.replace(/[^a-z0-9]+/g, "-");
     slug = slug.replace(/^-+|-+$/g, '');
-    return `photos/${slug}.png`;
+    return `assets/photos/${slug}.png`;
 }
 
 export function calculateAge(birthdateStr) {

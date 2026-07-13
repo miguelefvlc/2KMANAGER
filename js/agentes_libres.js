@@ -112,7 +112,7 @@ function applyFiltersAndRender() {
     const adminHoverClass = isAdmin() ? 'admin-hover-row' : '';
     
     filtered.forEach(p => {
-        const fallbackUrl = 'photos/none.svg';
+        const fallbackUrl = 'assets/photos/none.svg';
         const photoPath = typeof getPlayerPhotoPath === 'function' ? getPlayerPhotoPath(p.name) : fallbackUrl;
         const url2k = typeof generate2kRatingUrl === 'function' ? generate2kRatingUrl(p.name) : '#';
         

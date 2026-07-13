@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     let teamKey = null;
     if (typeof TEAM_LOGOS !== 'undefined') {
         teamKey = Object.keys(TEAM_LOGOS).find(k => k.toLowerCase() === targetTeamName.toLowerCase());
-        if (teamKey) logoSrc = 'logos/' + TEAM_LOGOS[teamKey];
+        if (teamKey) logoSrc = 'assets/logos/' + TEAM_LOGOS[teamKey];
     }
     
     if (teamKey && typeof TEAM_COLORS !== 'undefined' && TEAM_COLORS[teamKey]) {
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                         <div class="vr-photo-bg"></div>
                         <div class="vr-rating">${rating}</div>
                         <div class="vr-photo-container">
-                            <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.src='photos/none.svg';">
+                            <img src="${photoSrc}" alt="${name}" class="vr-photo" onerror="this.onerror=null; this.src='assets/photos/none.svg';">
                         </div>
                     </div>
                     <div class="vr-info">

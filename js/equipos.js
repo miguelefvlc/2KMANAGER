@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Add background logo for CSS
             const teamKey = Object.keys(TEAM_LOGOS).find(k => k.toLowerCase() === tName);
             if(teamKey && TEAM_LOGOS[teamKey]) {
-                card.style.setProperty('--bg-logo', `url('logos/${TEAM_LOGOS[teamKey]}')`);
+                card.style.setProperty('--bg-logo', `url('assets/logos/${TEAM_LOGOS[teamKey]}')`);
             }
 
             if(teamData) {

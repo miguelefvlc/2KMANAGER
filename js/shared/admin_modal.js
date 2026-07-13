@@ -26,7 +26,7 @@ function openAdminModal(uid) {
     const teamObj = _teamsData.find(t => t.id === p.teamId);
     const team = isFA ? 'Agente Libre' : (teamObj ? teamObj.name : 'Desconocido');
     
-    const fallbackUrl = 'photos/none.svg';
+    const fallbackUrl = 'assets/photos/none.svg';
     const photoSrc = typeof getPlayerPhotoPath === 'function' ? getPlayerPhotoPath(p.name) : fallbackUrl;
     
     let html = `
