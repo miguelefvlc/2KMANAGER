@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#111111"/>
+  
+  <!-- L1 / R1 Buttons -->
+  <path d="M 136 184 v -16 c 0 -12 10 -22 22 -22 h 36 c 12 0 22 10 22 22 v 16" fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round"/>
+  <path d="M 296 184 v -16 c 0 -12 10 -22 22 -22 h 36 c 12 0 22 10 22 22 v 16" fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round"/>
+  
+  <!-- Controller outline -->
+  <path d="M128,184 h256 
+           c40,0 72,32 72,72 v40 
+           c0,48 -39,88 -88,88 
+           c-28,0 -53,-13 -68,-35 
+           l-12,-17 h-64 l-12,17 
+           c-15,22 -40,35 -68,35 
+           c-49,0 -88,-40 -88,-88 v-40 
+           c0,-40 32,-72 72,-72 z" 
+        fill="none" stroke="#ffffff" stroke-width="20" stroke-linejoin="round"/>
+        
+  <!-- D-pad (left) -->
+  <path d="M118,234 v20 h-22 v20 h22 v20 h20 v-20 h22 v-20 h-22 v-20 h-20 z" fill="#ffffff"/>
+  
+  <!-- Action buttons (right) -->
+  <circle cx="384" cy="238" r="8" fill="#ffffff"/>
+  <circle cx="358" cy="264" r="8" fill="#ffffff"/>
+  <circle cx="410" cy="264" r="8" fill="#ffffff"/>
+  <circle cx="384" cy="290" r="8" fill="#ffffff"/>
+  
+  <!-- Basketball in the center -->
+  <circle cx="256" cy="264" r="48" fill="none" stroke="#ea580c" stroke-width="10"/>
+  <line x1="256" y1="216" x2="256" y2="312" stroke="#ea580c" stroke-width="10"/>
+  <line x1="208" y1="264" x2="304" y2="264" stroke="#ea580c" stroke-width="10"/>
+  <path d="M 222 230 C 244 246 244 282 222 298" fill="none" stroke="#ea580c" stroke-width="10" stroke-linecap="round"/>
+  <path d="M 290 230 C 268 246 268 282 290 298" fill="none" stroke="#ea580c" stroke-width="10" stroke-linecap="round"/>
+</svg>

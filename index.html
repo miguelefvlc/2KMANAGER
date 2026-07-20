@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,10 @@
     <title>2k OFFICE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@800&family=Permanent+Marker&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index-style.css">
+
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <meta name="theme-color" content="#111111">
 </head>
 <body>
 
@@ -62,6 +66,16 @@
     <script type="module">
         import { injectAdminButton } from './js/shared/admin_auth.js';
         injectAdminButton();
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado con Ã©xito', reg))
+                    .catch(err => console.warn('Error al registrar Service Worker', err));
+            });
+        }
     </script>
 </body>
 </html>
