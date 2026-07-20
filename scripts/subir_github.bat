@@ -1,6 +1,7 @@
 @echo off
+cd /d "%~dp0.."
 echo Subiendo cambios a GitHub...
-git add .
+git add -A
 git commit -m "Actualizacion automatica %date% %time%"
 git push
 echo.

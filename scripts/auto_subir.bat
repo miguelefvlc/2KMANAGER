@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0.."
 title 2kOffice Auto-Sync
 echo =========================================
 echo  Vigilante de GitHub (Auto-Sync) Activado
@@ -15,7 +16,7 @@ git status --porcelain | findstr "\.csv" >nul
 if %errorlevel% equ 0 (
     echo.
     echo [ %time% ] Modificacion detectada en los CSV. Subiendo a GitHub...
-    git add .
+    git add -A
     git commit -m "Auto-Sync %date% %time%"
     git push
     echo.
