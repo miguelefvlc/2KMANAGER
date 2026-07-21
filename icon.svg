@@ -1,34 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#111111"/>
-  
-  <!-- L1 / R1 Buttons -->
-  <path d="M 136 184 v -16 c 0 -12 10 -22 22 -22 h 36 c 12 0 22 10 22 22 v 16" fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round"/>
-  <path d="M 296 184 v -16 c 0 -12 10 -22 22 -22 h 36 c 12 0 22 10 22 22 v 16" fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round"/>
-  
-  <!-- Controller outline -->
-  <path d="M128,184 h256 
-           c40,0 72,32 72,72 v40 
-           c0,48 -39,88 -88,88 
-           c-28,0 -53,-13 -68,-35 
-           l-12,-17 h-64 l-12,17 
-           c-15,22 -40,35 -68,35 
-           c-49,0 -88,-40 -88,-88 v-40 
-           c0,-40 32,-72 72,-72 z" 
-        fill="none" stroke="#ffffff" stroke-width="20" stroke-linejoin="round"/>
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <!-- Dark rounded background for the app icon -->
+    <rect width="512" height="512" rx="110" fill="#111111"/>
+
+    <!-- Left side: Basketball -->
+    <g clip-path="url(#left-half)">
+        <!-- Base orange circle -->
+        <circle cx="256" cy="256" r="160" fill="#E65100" />
         
-  <!-- D-pad (left) -->
-  <path d="M118,234 v20 h-22 v20 h22 v20 h20 v-20 h22 v-20 h-22 v-20 h-20 z" fill="#ffffff"/>
-  
-  <!-- Action buttons (right) -->
-  <circle cx="384" cy="238" r="8" fill="#ffffff"/>
-  <circle cx="358" cy="264" r="8" fill="#ffffff"/>
-  <circle cx="410" cy="264" r="8" fill="#ffffff"/>
-  <circle cx="384" cy="290" r="8" fill="#ffffff"/>
-  
-  <!-- Basketball in the center -->
-  <circle cx="256" cy="264" r="48" fill="none" stroke="#ea580c" stroke-width="10"/>
-  <line x1="256" y1="216" x2="256" y2="312" stroke="#ea580c" stroke-width="10"/>
-  <line x1="208" y1="264" x2="304" y2="264" stroke="#ea580c" stroke-width="10"/>
-  <path d="M 222 230 C 244 246 244 282 222 298" fill="none" stroke="#ea580c" stroke-width="10" stroke-linecap="round"/>
-  <path d="M 290 230 C 268 246 268 282 290 298" fill="none" stroke="#ea580c" stroke-width="10" stroke-linecap="round"/>
+        <!-- Basketball lines (black stroke) -->
+        <circle cx="256" cy="256" r="160" fill="none" stroke="#111111" stroke-width="14"/>
+        
+        <!-- vertical curve -->
+        <path d="M 256 96 C 160 140, 160 372, 256 416" fill="none" stroke="#111111" stroke-width="14"/>
+        <!-- horizontal line -->
+        <line x1="96" y1="256" x2="256" y2="256" stroke="#111111" stroke-width="14"/>
+    </g>
+
+    <!-- Right side: PlayStation -->
+    <g clip-path="url(#right-half)">
+        <!-- Base light grey circle -->
+        <circle cx="256" cy="256" r="160" fill="#E0E0E0" />
+        <circle cx="256" cy="256" r="160" fill="none" stroke="#111111" stroke-width="14"/>
+
+        <!-- Triangle (Green) -->
+        <polygon points="350,192 334,220 366,220" fill="none" stroke="#4CAF50" stroke-width="8" stroke-linejoin="round"/>
+        
+        <!-- Circle (Red) -->
+        <circle cx="395" cy="256" r="14" fill="none" stroke="#F44336" stroke-width="8"/>
+        
+        <!-- Cross (Blue) -->
+        <path d="M 338 289 L 362 313 M 362 289 L 338 313" fill="none" stroke="#2196F3" stroke-width="8" stroke-linecap="round"/>
+
+        <!-- Square (Pink) -->
+        <rect x="291" y="242" width="28" height="28" fill="none" stroke="#E91E63" stroke-width="8" rx="4"/>
+    </g>
+    
+    <!-- Central Divider -->
+    <line x1="256" y1="96" x2="256" y2="416" stroke="#111111" stroke-width="14" stroke-linecap="round"/>
+
+    <defs>
+        <clipPath id="left-half">
+            <rect x="0" y="0" width="256" height="512"/>
+        </clipPath>
+        <clipPath id="right-half">
+            <rect x="256" y="0" width="512" height="512"/>
+        </clipPath>
+    </defs>
 </svg>

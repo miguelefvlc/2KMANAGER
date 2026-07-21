@@ -1,4 +1,4 @@
-const CACHE_NAME = '2koffice-v1';
+﻿const CACHE_NAME = '2koffice-v1';
 const urlsToCache = [
   './',
   './index.html',
