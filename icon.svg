@@ -1,49 +1,70 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-    <!-- Dark rounded background for the app icon -->
-    <rect width="512" height="512" rx="110" fill="#111111"/>
-
-    <!-- Left side: Basketball -->
-    <g clip-path="url(#left-half)">
-        <!-- Base orange circle -->
-        <circle cx="256" cy="256" r="160" fill="#E65100" />
-        
-        <!-- Basketball lines (black stroke) -->
-        <circle cx="256" cy="256" r="160" fill="none" stroke="#111111" stroke-width="14"/>
-        
-        <!-- vertical curve -->
-        <path d="M 256 96 C 160 140, 160 372, 256 416" fill="none" stroke="#111111" stroke-width="14"/>
-        <!-- horizontal line -->
-        <line x1="96" y1="256" x2="256" y2="256" stroke="#111111" stroke-width="14"/>
-    </g>
-
-    <!-- Right side: PlayStation -->
-    <g clip-path="url(#right-half)">
-        <!-- Base light grey circle -->
-        <circle cx="256" cy="256" r="160" fill="#E0E0E0" />
-        <circle cx="256" cy="256" r="160" fill="none" stroke="#111111" stroke-width="14"/>
-
-        <!-- Triangle (Green) -->
-        <polygon points="350,192 334,220 366,220" fill="none" stroke="#4CAF50" stroke-width="8" stroke-linejoin="round"/>
-        
-        <!-- Circle (Red) -->
-        <circle cx="395" cy="256" r="14" fill="none" stroke="#F44336" stroke-width="8"/>
-        
-        <!-- Cross (Blue) -->
-        <path d="M 338 289 L 362 313 M 362 289 L 338 313" fill="none" stroke="#2196F3" stroke-width="8" stroke-linecap="round"/>
-
-        <!-- Square (Pink) -->
-        <rect x="291" y="242" width="28" height="28" fill="none" stroke="#E91E63" stroke-width="8" rx="4"/>
-    </g>
-    
-    <!-- Central Divider -->
-    <line x1="256" y1="96" x2="256" y2="416" stroke="#111111" stroke-width="14" stroke-linecap="round"/>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
     <defs>
-        <clipPath id="left-half">
-            <rect x="0" y="0" width="256" height="512"/>
+        <!-- The Gamepad Shape -->
+        <path id="gamepad" d="M 170 180 
+                 L 342 180 
+                 C 410 180, 452 210, 452 280 
+                 C 452 350, 432 420, 392 420 
+                 C 362 420, 342 360, 332 310 
+                 C 322 270, 286 270, 256 270
+                 C 226 270, 190 270, 180 310
+                 C 170 360, 150 420, 120 420
+                 C 80 420, 60 350, 60 280
+                 C 60 210, 102 180, 170 180 Z" />
+
+        <clipPath id="gamepad-clip">
+            <use href="#gamepad" />
         </clipPath>
-        <clipPath id="right-half">
-            <rect x="256" y="0" width="512" height="512"/>
+
+        <clipPath id="left-clip">
+            <rect x="0" y="0" width="256" height="512" />
+        </clipPath>
+
+        <clipPath id="right-clip">
+            <rect x="256" y="0" width="256" height="512" />
         </clipPath>
     </defs>
+
+    <!-- Background for the app icon (rounded rect) -->
+    <rect width="512" height="512" rx="110" fill="#1E1E24" />
+
+    <!-- Left Half: Basketball -->
+    <g clip-path="url(#left-clip)">
+        <!-- Base Gamepad shape masked -->
+        <use href="#gamepad" fill="#FF7043" />
+        
+        <!-- Basketball lines -->
+        <g clip-path="url(#gamepad-clip)">
+            <!-- Horizontal -->
+            <line x1="0" y1="270" x2="256" y2="270" stroke="#1E1E24" stroke-width="14" />
+            <!-- Vertical -->
+            <line x1="160" y1="0" x2="160" y2="512" stroke="#1E1E24" stroke-width="14" />
+            <!-- Curve -->
+            <path d="M 160 170 C 240 220, 240 320, 160 380" fill="none" stroke="#1E1E24" stroke-width="14" />
+        </g>
+    </g>
+
+    <!-- Right Half: PlayStation Controller -->
+    <g clip-path="url(#right-clip)">
+        <use href="#gamepad" fill="#F5F5F5" />
+        
+        <!-- Action Buttons -->
+        <!-- Center of right cluster: x=360, y=250 -->
+        <!-- Triangle (Green) -->
+        <polygon points="360,202 346,226 374,226" fill="none" stroke="#4CAF50" stroke-width="7" stroke-linejoin="round"/>
+        
+        <!-- Circle (Red) -->
+        <circle cx="398" cy="250" r="13" fill="none" stroke="#F44336" stroke-width="7"/>
+        
+        <!-- Cross (Blue) -->
+        <path d="M 347 287 L 373 313 M 373 287 L 347 313" fill="none" stroke="#2196F3" stroke-width="7" stroke-linecap="round"/>
+
+        <!-- Square (Pink) -->
+        <rect x="309" y="237" width="26" height="26" fill="none" stroke="#E91E63" stroke-width="7" rx="3"/>
+    </g>
+
+    <!-- Gamepad Outer Border -->
+    <use href="#gamepad" fill="none" stroke="#1E1E24" stroke-width="14" />
+    <!-- Middle Divider for clean split -->
+    <line x1="256" y1="173" x2="256" y2="277" stroke="#1E1E24" stroke-width="14" stroke-linecap="round"/>
 </svg>
